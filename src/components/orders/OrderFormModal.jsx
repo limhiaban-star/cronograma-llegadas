@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useOrderStore } from '../../store/useOrderStore';
 import { X } from 'lucide-react';
+import emailjs from '@emailjs/browser';
 
 const CEDIS = [
   'CEDI MERIDA', 'CEDI VILLAHERMOSA', 'CEDI EDOMEX', 'CEDI GUADALAJARA',
@@ -91,6 +92,22 @@ export default function OrderFormModal({ onClose, orderToEdit = null }) {
       updateOrder(orderToEdit.id, payload);
     } else {
       addOrder(payload);
+      
+      // Enviar correo automático
+      const templateParams = {
+        numero_oc: formData.folioOC,
+        proveedor: formData.proveedor,
+        cedi: formData.cedi,
+        fecha_entrega: formData.fechaEntrega || 'No especificada',
+        cantidad: formData.cantidadSolicitada
+      };
+
+      emailjs.send(
+        'service_b9ras6v',
+        'template_a6keuci',
+        templateParams,
+        'B25tS4bTI0j2WlOI9'
+      ).catch((err) => console.error("Error al enviar email:", err));
     }
     
     onClose();
