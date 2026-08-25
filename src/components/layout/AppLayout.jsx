@@ -3,6 +3,7 @@ import { Outlet } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import Topbar from './Topbar';
 import OrderFormModal from '../orders/OrderFormModal';
+import logoMacropay from '../../assets/logo-macropay.png';
 
 export default function AppLayout() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -20,6 +21,15 @@ export default function AppLayout() {
       {isModalOpen && (
         <OrderFormModal onClose={() => setIsModalOpen(false)} />
       )}
+      
+      {/* Logo fijo en la parte inferior derecha */}
+      <div className="fixed bottom-6 right-6 z-40 pointer-events-none opacity-80 drop-shadow-md">
+        <img 
+          src={logoMacropay} 
+          alt="Macropay Logo" 
+          className="h-10 md:h-14 object-contain"
+        />
+      </div>
     </div>
   );
 }
