@@ -15,13 +15,6 @@ export default function Sidebar() {
   return (
     <aside className="w-64 bg-macro-blue text-white min-h-screen flex flex-col">
       <div className="p-6 border-b border-blue-800">
-        <div className="mb-6 bg-white/10 p-2 rounded inline-block backdrop-blur-sm">
-          <img 
-            src={logoMacropay} 
-            alt="Macropay Logo" 
-            className="h-8 object-contain"
-          />
-        </div>
         <h1 className="text-2xl font-display font-black text-macro-yellow leading-tight">
           CRONOGRAMA<br/>DE LLEGADAS
         </h1>
