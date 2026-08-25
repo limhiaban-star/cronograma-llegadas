@@ -1,6 +1,8 @@
 import { Link, useLocation } from 'react-router-dom';
 import { LayoutDashboard, Calendar, List, Settings } from 'lucide-react';
 
+import logoMacropay from '../../assets/logo-macropay.png';
+
 export default function Sidebar() {
   const location = useLocation();
   
@@ -15,13 +17,9 @@ export default function Sidebar() {
       <div className="p-6 border-b border-blue-800">
         <div className="mb-6 bg-white/10 p-2 rounded inline-block backdrop-blur-sm">
           <img 
-            src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/Macropay_Logo.png/800px-Macropay_Logo.png" 
+            src={logoMacropay} 
             alt="Macropay Logo" 
             className="h-8 object-contain"
-            onError={(e) => {
-              e.target.onerror = null;
-              e.target.src = "https://macropay.mx/wp-content/uploads/2021/11/logo-macropay.png";
-            }}
           />
         </div>
         <h1 className="text-2xl font-display font-black text-macro-yellow leading-tight">
