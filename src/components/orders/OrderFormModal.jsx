@@ -94,7 +94,20 @@ export default function OrderFormModal({ onClose, orderToEdit = null }) {
       addOrder(payload);
       
       // Enviar correo automático
+      const cediEmails = {
+        'CEDI MERIDA': 'israel.pat@macropay.mx, david.ocampo@macropay.mx, russell.pool@macropay.mx',
+        'CEDI VILLAHERMOSA': 'rafael.torrez@macropay.mx, jesus.zavala@macropay.mx, omar.aguilar@macropay.mx',
+        'CEDI EDOMEX': 'jorge.zarza@macropay.mx',
+        'CEDI GUADALAJARA': 'jorge.zarza@macropay.mx',
+        'CEDI MERIDA MOTOS': 'israel.pat@macropay.mx, david.ocampo@macropay.mx, russell.pool@macropay.mx',
+        'CEDI SAN LUIS POTOSÍ': 'jorge.zarza@macropay.mx',
+        'CEDI CULIACÁN': 'filemon.martinez@macropay.mx',
+        'CEDI SALTILLO': 'luis.chel@macropay.mx',
+        'CEDI TIJUANA': 'filemon.martinez@macropay.mx'
+      };
+
       const templateParams = {
+        to_email: cediEmails[formData.cedi] || '',
         numero_oc: formData.folioOC,
         proveedor: formData.proveedor,
         cedi: formData.cedi,
@@ -102,12 +115,16 @@ export default function OrderFormModal({ onClose, orderToEdit = null }) {
         cantidad: formData.cantidadSolicitada
       };
 
-      emailjs.send(
-        'service_b9ras6v',
-        'template_a6keuci',
-        templateParams,
-        'B25tS4bTI0j2WlOI9'
-      ).catch((err) => console.error("Error al enviar email:", err));
+      if (templateParams.to_email) {
+        emailjs.send(
+          'service_b9ras6v',
+          'template_a6keuci',
+          templateParams,
+          'B25tS4bTI0j2WlOI9'
+        ).catch((err) => console.error("Error al enviar email:", err));
+      } else {
+        console.warn("No hay correo configurado para el CEDI seleccionado.");
+      }
     }
     
     onClose();
