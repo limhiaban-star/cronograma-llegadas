@@ -94,7 +94,7 @@ export default function TrackingTable() {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
         <h1 className="text-xl font-display font-black text-gray-800">Seguimiento de Órdenes</h1>
         
-        <div className="flex items-center gap-3 w-full md:w-auto">
+        <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
           <div className="relative flex-1 md:w-64">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
             <input 
@@ -105,15 +105,14 @@ export default function TrackingTable() {
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-          <div className="flex flex-wrap items-center gap-3">
-            <select 
-              className="border border-gray-300 rounded-md py-2 px-3 text-sm focus:ring-macro-blue outline-none"
-              value={filterMesOC}
-              onChange={(e) => setFilterMesOC(e.target.value)}
-            >
-              <option value="">Mes de OC (Todos)</option>
-              {MESES.map(m => <option key={m.value} value={m.value}>{m.label}</option>)}
-            </select>
+          <select 
+            className="border border-gray-300 rounded-md py-2 px-3 text-sm focus:ring-macro-blue outline-none"
+            value={filterMesOC}
+            onChange={(e) => setFilterMesOC(e.target.value)}
+          >
+            <option value="">Mes de OC (Todos)</option>
+            {MESES.map(m => <option key={m.value} value={m.value}>{m.label}</option>)}
+          </select>
             
             <select 
               className="border border-gray-300 rounded-md py-2 px-3 text-sm focus:ring-macro-blue outline-none"
