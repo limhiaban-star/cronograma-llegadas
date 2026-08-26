@@ -4,6 +4,19 @@ import { format } from 'date-fns';
 export default function OrderDetailsModal({ order, onClose }) {
   if (!order) return null;
 
+  const formatHorario = (horario) => {
+    if (!horario || horario.length === 0) return 'No especificada';
+    if (typeof horario === 'string') return horario;
+    if (Array.isArray(horario) && horario.length > 0) {
+      if (horario.length === 1) return horario[0];
+      const sorted = [...horario].sort((a, b) => a.localeCompare(b));
+      const first = sorted[0].split(' - ')[0];
+      const last = sorted[sorted.length - 1].split(' - ')[1];
+      return `${first} - ${last}`;
+    }
+    return 'No especificada';
+  };
+
   return (
     <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4 backdrop-blur-sm">
       <div className="bg-white rounded-xl shadow-xl w-full max-w-2xl flex flex-col max-h-[90vh]">
@@ -30,7 +43,7 @@ export default function OrderDetailsModal({ order, onClose }) {
             </div>
             <div><span className="text-gray-500 block mb-1">Fecha OC</span><span className="font-bold">{format(new Date(order.fechaOC), 'dd/MM/yyyy')}</span></div>
             <div><span className="text-gray-500 block mb-1">Fecha Entrega Estimada</span><span className="font-bold">{format(new Date(order.fechaEntrega), 'dd/MM/yyyy')}</span></div>
-            <div><span className="text-gray-500 block mb-1">Horario Reservado</span><span className="font-bold">{order.horaEntrega || 'No especificada'}</span></div>
+            <div><span className="text-gray-500 block mb-1">Horario Reservado</span><span className="font-bold">{formatHorario(order.horaEntrega)}</span></div>
             
             <div className="col-span-2 border-t border-gray-200 pt-4 mt-2">
               <h3 className="font-bold text-gray-800 mb-3">Información de Ingreso</h3>
