@@ -16,12 +16,16 @@ const MESES = [
   { value: '10', label: 'Octubre' }, { value: '11', label: 'Noviembre' }, { value: '12', label: 'Diciembre' }
 ];
 
+const AÑOS = ['2023', '2024', '2025', '2026', '2027', '2028', '2029', '2030'];
+
 export default function Dashboard() {
   const { orders } = useOrderStore();
   const [filterProveedor, setFilterProveedor] = useState('');
   const [filterCedi, setFilterCedi] = useState('');
   const [filterMesOC, setFilterMesOC] = useState('');
+  const [filterMesEntrega, setFilterMesEntrega] = useState('');
   const [filterMesIngreso, setFilterMesIngreso] = useState('');
+  const [filterAño, setFilterAño] = useState('');
   
   const filteredOrders = orders.filter(o => {
     const matchesProveedor = filterProveedor ? o.proveedor === filterProveedor : true;
@@ -30,10 +34,18 @@ export default function Dashboard() {
     const mesOC = o.fechaOC ? o.fechaOC.substring(5, 7) : '';
     const matchesMesOC = filterMesOC ? mesOC === filterMesOC : true;
     
+    const mesEntrega = o.fechaEntrega ? o.fechaEntrega.substring(5, 7) : '';
+    const matchesMesEntrega = filterMesEntrega ? mesEntrega === filterMesEntrega : true;
+    
     const mesIngreso = o.fechaIngreso ? o.fechaIngreso.substring(5, 7) : '';
     const matchesMesIngreso = filterMesIngreso ? mesIngreso === filterMesIngreso : true;
     
-    return matchesProveedor && matchesCedi && matchesMesOC && matchesMesIngreso;
+    const añoOC = o.fechaOC ? o.fechaOC.substring(0, 4) : '';
+    const añoEntrega = o.fechaEntrega ? o.fechaEntrega.substring(0, 4) : '';
+    const añoIngreso = o.fechaIngreso ? o.fechaIngreso.substring(0, 4) : '';
+    const matchesAño = filterAño ? (añoOC === filterAño || añoEntrega === filterAño || añoIngreso === filterAño) : true;
+    
+    return matchesProveedor && matchesCedi && matchesMesOC && matchesMesEntrega && matchesMesIngreso && matchesAño;
   });
 
   const inTransit = filteredOrders.filter(o => o.estatus === 'EN TRÁNSITO').length;
@@ -74,16 +86,34 @@ export default function Dashboard() {
         <h1 className="text-2xl font-display font-black text-gray-800">Dashboard Ejecutivo</h1>
         <div className="flex flex-wrap items-center gap-3 w-full xl:w-auto justify-start xl:justify-end">
           <select 
-            className="border border-gray-300 rounded-md py-2 px-3 text-sm focus:ring-macro-blue outline-none bg-white min-w-[140px] flex-1 xl:flex-none"
+            className="border border-gray-300 rounded-md py-2 px-3 text-sm focus:ring-macro-blue outline-none bg-white min-w-[120px] flex-1 xl:flex-none"
+            value={filterAño}
+            onChange={(e) => setFilterAño(e.target.value)}
+          >
+            <option value="">Año (Todos)</option>
+            {AÑOS.map(a => <option key={a} value={a}>{a}</option>)}
+          </select>
+          
+          <select 
+            className="border border-gray-300 rounded-md py-2 px-3 text-sm focus:ring-macro-blue outline-none bg-white min-w-[120px] flex-1 xl:flex-none"
             value={filterMesOC}
             onChange={(e) => setFilterMesOC(e.target.value)}
           >
             <option value="">Mes de OC</option>
             {MESES.map(m => <option key={m.value} value={m.value}>{m.label}</option>)}
           </select>
+
+          <select 
+            className="border border-gray-300 rounded-md py-2 px-3 text-sm focus:ring-macro-blue outline-none bg-white min-w-[120px] flex-1 xl:flex-none"
+            value={filterMesEntrega}
+            onChange={(e) => setFilterMesEntrega(e.target.value)}
+          >
+            <option value="">Mes Entrega</option>
+            {MESES.map(m => <option key={m.value} value={m.value}>{m.label}</option>)}
+          </select>
           
           <select 
-            className="border border-gray-300 rounded-md py-2 px-3 text-sm focus:ring-macro-blue outline-none bg-white min-w-[140px] flex-1 xl:flex-none"
+            className="border border-gray-300 rounded-md py-2 px-3 text-sm focus:ring-macro-blue outline-none bg-white min-w-[120px] flex-1 xl:flex-none"
             value={filterMesIngreso}
             onChange={(e) => setFilterMesIngreso(e.target.value)}
           >
