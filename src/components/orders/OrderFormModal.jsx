@@ -285,11 +285,11 @@ export default function OrderFormModal({ onClose, orderToEdit = null }) {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Folio OC *</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Orden de compra *</label>
                   <input type="text" name="folioOC" required value={formData.folioOC} onChange={handleChange} className="w-full border border-gray-300 rounded-md p-2 outline-none focus:ring-2 focus:ring-macro-blue" />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Folio SOLPED *</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Solped *</label>
                   <input type="text" name="folioSOLPED" required value={formData.folioSOLPED} onChange={handleChange} className="w-full border border-gray-300 rounded-md p-2 outline-none focus:ring-2 focus:ring-macro-blue" />
                 </div>
                 <div>
