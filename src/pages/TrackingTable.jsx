@@ -15,10 +15,7 @@ export default function TrackingTable() {
   const [editingOrder, setEditingOrder] = useState(null);
   const [viewingOrder, setViewingOrder] = useState(null);
 
-  const PROVEEDORES = [
-    'SAMSUNG', 'MOTOROLA', 'XIAOMI', 'APPLE', 'OPPO', 'ZTE', 
-    'HONOR', 'VIVO', 'HUAWEI', 'REALME', 'HISENSE', 'TCL'
-  ];
+  const PROVEEDORES = ['Bodesa', 'Veloci', 'Bajaj', 'Carabela', 'Kiwo', 'Yadea', 'Moto Colt'];
 
   const filteredOrders = orders.filter(o => {
     const matchesSearch = o.folioOC.includes(searchTerm) || o.proveedor.toLowerCase().includes(searchTerm.toLowerCase()) || o.cedi.toLowerCase().includes(searchTerm.toLowerCase());
