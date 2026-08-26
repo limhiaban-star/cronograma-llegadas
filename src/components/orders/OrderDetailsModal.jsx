@@ -30,6 +30,7 @@ export default function OrderDetailsModal({ order, onClose }) {
             </div>
             <div><span className="text-gray-500 block mb-1">Fecha OC</span><span className="font-bold">{format(new Date(order.fechaOC), 'dd/MM/yyyy')}</span></div>
             <div><span className="text-gray-500 block mb-1">Fecha Entrega Estimada</span><span className="font-bold">{format(new Date(order.fechaEntrega), 'dd/MM/yyyy')}</span></div>
+            <div><span className="text-gray-500 block mb-1">Horario Reservado</span><span className="font-bold">{order.horaEntrega || 'No especificada'}</span></div>
             
             <div className="col-span-2 border-t border-gray-200 pt-4 mt-2">
               <h3 className="font-bold text-gray-800 mb-3">Información de Ingreso</h3>
