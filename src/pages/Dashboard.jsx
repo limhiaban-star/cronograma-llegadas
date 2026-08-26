@@ -9,15 +9,31 @@ const CEDIS = [
   'CEDI CULIACÁN', 'CEDI SALTILLO', 'CEDI TIJUANA'
 ];
 
+const MESES = [
+  { value: '01', label: 'Enero' }, { value: '02', label: 'Febrero' }, { value: '03', label: 'Marzo' },
+  { value: '04', label: 'Abril' }, { value: '05', label: 'Mayo' }, { value: '06', label: 'Junio' },
+  { value: '07', label: 'Julio' }, { value: '08', label: 'Agosto' }, { value: '09', label: 'Septiembre' },
+  { value: '10', label: 'Octubre' }, { value: '11', label: 'Noviembre' }, { value: '12', label: 'Diciembre' }
+];
+
 export default function Dashboard() {
   const { orders } = useOrderStore();
   const [filterProveedor, setFilterProveedor] = useState('');
   const [filterCedi, setFilterCedi] = useState('');
+  const [filterMesOC, setFilterMesOC] = useState('');
+  const [filterMesIngreso, setFilterMesIngreso] = useState('');
   
   const filteredOrders = orders.filter(o => {
     const matchesProveedor = filterProveedor ? o.proveedor === filterProveedor : true;
     const matchesCedi = filterCedi ? o.cedi === filterCedi : true;
-    return matchesProveedor && matchesCedi;
+    
+    const mesOC = o.fechaOC ? o.fechaOC.substring(5, 7) : '';
+    const matchesMesOC = filterMesOC ? mesOC === filterMesOC : true;
+    
+    const mesIngreso = o.fechaIngreso ? o.fechaIngreso.substring(5, 7) : '';
+    const matchesMesIngreso = filterMesIngreso ? mesIngreso === filterMesIngreso : true;
+    
+    return matchesProveedor && matchesCedi && matchesMesOC && matchesMesIngreso;
   });
 
   const inTransit = filteredOrders.filter(o => o.estatus === 'EN TRÁNSITO').length;
@@ -54,11 +70,29 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div className="flex flex-col xl:flex-row items-start xl:items-center justify-between gap-4">
         <h1 className="text-2xl font-display font-black text-gray-800">Dashboard Ejecutivo</h1>
-        <div className="flex items-center gap-3 w-full sm:w-auto">
+        <div className="flex flex-wrap items-center gap-3 w-full xl:w-auto justify-start xl:justify-end">
           <select 
-            className="border border-gray-300 rounded-md py-2 px-3 text-sm focus:ring-macro-blue outline-none bg-white min-w-[180px] flex-1"
+            className="border border-gray-300 rounded-md py-2 px-3 text-sm focus:ring-macro-blue outline-none bg-white min-w-[140px] flex-1 xl:flex-none"
+            value={filterMesOC}
+            onChange={(e) => setFilterMesOC(e.target.value)}
+          >
+            <option value="">Mes de OC</option>
+            {MESES.map(m => <option key={m.value} value={m.value}>{m.label}</option>)}
+          </select>
+          
+          <select 
+            className="border border-gray-300 rounded-md py-2 px-3 text-sm focus:ring-macro-blue outline-none bg-white min-w-[140px] flex-1 xl:flex-none"
+            value={filterMesIngreso}
+            onChange={(e) => setFilterMesIngreso(e.target.value)}
+          >
+            <option value="">Mes Ingreso</option>
+            {MESES.map(m => <option key={m.value} value={m.value}>{m.label}</option>)}
+          </select>
+
+          <select 
+            className="border border-gray-300 rounded-md py-2 px-3 text-sm focus:ring-macro-blue outline-none bg-white min-w-[140px] flex-1 xl:flex-none"
             value={filterCedi}
             onChange={(e) => setFilterCedi(e.target.value)}
           >
@@ -67,7 +101,7 @@ export default function Dashboard() {
           </select>
           
           <select 
-            className="border border-gray-300 rounded-md py-2 px-3 text-sm focus:ring-macro-blue outline-none bg-white min-w-[180px] flex-1"
+            className="border border-gray-300 rounded-md py-2 px-3 text-sm focus:ring-macro-blue outline-none bg-white min-w-[140px] flex-1 xl:flex-none"
             value={filterProveedor}
             onChange={(e) => setFilterProveedor(e.target.value)}
           >
