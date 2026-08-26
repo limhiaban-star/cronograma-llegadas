@@ -11,17 +11,23 @@ export default function TrackingTable() {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterEstatus, setFilterEstatus] = useState('');
   const [filterProveedor, setFilterProveedor] = useState('');
+  const [filterCedi, setFilterCedi] = useState('');
   
   const [editingOrder, setEditingOrder] = useState(null);
   const [viewingOrder, setViewingOrder] = useState(null);
 
   const PROVEEDORES = ['Bodesa', 'Veloci', 'Bajaj', 'Carabela', 'Kiwo', 'Yadea', 'Moto Colt'];
+  const CEDIS = [
+    'CEDI MERIDA', 'CEDI VILLAHERMOSA', 'CEDI EDOMEX', 'CEDI GUADALAJARA',
+    'CEDI MERIDA MOTOS', 'CEDI SAN LUIS POTOSÍ', 'CEDI CULIACÁN', 'CEDI SALTILLO', 'CEDI TIJUANA'
+  ];
 
   const filteredOrders = orders.filter(o => {
     const matchesSearch = o.folioOC.includes(searchTerm) || o.proveedor.toLowerCase().includes(searchTerm.toLowerCase()) || o.cedi.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesEstatus = filterEstatus ? o.estatus === filterEstatus : true;
     const matchesProveedor = filterProveedor ? o.proveedor === filterProveedor : true;
-    return matchesSearch && matchesEstatus && matchesProveedor;
+    const matchesCedi = filterCedi ? o.cedi === filterCedi : true;
+    return matchesSearch && matchesEstatus && matchesProveedor && matchesCedi;
   });
 
   const handleDelete = (id) => {
@@ -80,6 +86,15 @@ export default function TrackingTable() {
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
+          
+          <select 
+            className="border border-gray-300 rounded-md py-2 px-3 text-sm focus:ring-macro-blue outline-none"
+            value={filterCedi}
+            onChange={(e) => setFilterCedi(e.target.value)}
+          >
+            <option value="">Todos los CEDIS</option>
+            {CEDIS.map(c => <option key={c} value={c}>{c}</option>)}
+          </select>
           
           <select 
             className="border border-gray-300 rounded-md py-2 px-3 text-sm focus:ring-macro-blue outline-none"
