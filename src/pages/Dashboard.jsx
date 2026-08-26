@@ -3,14 +3,22 @@ import { useOrderStore } from '../store/useOrderStore';
 import { Package, Truck, XCircle, CheckCircle, Clock, AlertTriangle } from 'lucide-react';
 
 const PROVEEDORES = ['Bodesa', 'Veloci', 'Bajaj', 'Carabela', 'Kiwo', 'Yadea', 'Moto Colt'];
+const CEDIS = [
+  'CEDI MERIDA', 'CEDI TUXTLA GUTIÉRREZ', 'CEDI VILLAHERMOSA', 'CEDI OAXACA',
+  'CEDI EDOMEX', 'CEDI GUADALAJARA', 'CEDI MERIDA MOTOS', 'CEDI SAN LUIS POTOSÍ',
+  'CEDI CULIACÁN', 'CEDI SALTILLO', 'CEDI TIJUANA'
+];
 
 export default function Dashboard() {
   const { orders } = useOrderStore();
   const [filterProveedor, setFilterProveedor] = useState('');
+  const [filterCedi, setFilterCedi] = useState('');
   
-  const filteredOrders = filterProveedor 
-    ? orders.filter(o => o.proveedor === filterProveedor) 
-    : orders;
+  const filteredOrders = orders.filter(o => {
+    const matchesProveedor = filterProveedor ? o.proveedor === filterProveedor : true;
+    const matchesCedi = filterCedi ? o.cedi === filterCedi : true;
+    return matchesProveedor && matchesCedi;
+  });
 
   const inTransit = filteredOrders.filter(o => o.estatus === 'EN TRÁNSITO').length;
   const delivered = filteredOrders.filter(o => o.estatus === 'ENTREGADO').length;
@@ -48,14 +56,25 @@ export default function Dashboard() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <h1 className="text-2xl font-display font-black text-gray-800">Dashboard Ejecutivo</h1>
-        <select 
-          className="border border-gray-300 rounded-md py-2 px-3 text-sm focus:ring-macro-blue outline-none bg-white min-w-[200px]"
-          value={filterProveedor}
-          onChange={(e) => setFilterProveedor(e.target.value)}
-        >
-          <option value="">Todos los proveedores</option>
-          {PROVEEDORES.map(p => <option key={p} value={p}>{p}</option>)}
-        </select>
+        <div className="flex items-center gap-3 w-full sm:w-auto">
+          <select 
+            className="border border-gray-300 rounded-md py-2 px-3 text-sm focus:ring-macro-blue outline-none bg-white min-w-[180px] flex-1"
+            value={filterCedi}
+            onChange={(e) => setFilterCedi(e.target.value)}
+          >
+            <option value="">Todos los CEDIS</option>
+            {CEDIS.map(c => <option key={c} value={c}>{c}</option>)}
+          </select>
+          
+          <select 
+            className="border border-gray-300 rounded-md py-2 px-3 text-sm focus:ring-macro-blue outline-none bg-white min-w-[180px] flex-1"
+            value={filterProveedor}
+            onChange={(e) => setFilterProveedor(e.target.value)}
+          >
+            <option value="">Todos los proveedores</option>
+            {PROVEEDORES.map(p => <option key={p} value={p}>{p}</option>)}
+          </select>
+        </div>
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
