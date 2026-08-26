@@ -23,6 +23,19 @@ export default function CalendarView() {
   const endDate = endOfWeek(monthEnd, { weekStarts: 1 });
 
   const dateFormat = "MMMM yyyy";
+  const formatHorario = (horario) => {
+    if (!horario) return '';
+    if (typeof horario === 'string') return horario;
+    if (Array.isArray(horario) && horario.length > 0) {
+      if (horario.length === 1) return horario[0];
+      const sorted = [...horario].sort((a, b) => a.localeCompare(b));
+      const first = sorted[0].split(' - ')[0];
+      const last = sorted[sorted.length - 1].split(' - ')[1];
+      return `${first} - ${last}`;
+    }
+    return '';
+  };
+
   const days = [];
   let day = startDate;
   let formattedDate = "";
@@ -35,7 +48,11 @@ export default function CalendarView() {
       // Filtrar ordenes para este dia
       const dayOrders = orders
         .filter(o => isSameDay(new Date(o.fechaEntrega), cloneDay))
-        .sort((a, b) => (a.horaEntrega || '').localeCompare(b.horaEntrega || ''));
+        .sort((a, b) => {
+          const hA = Array.isArray(a.horaEntrega) ? a.horaEntrega[0] : (a.horaEntrega || '');
+          const hB = Array.isArray(b.horaEntrega) ? b.horaEntrega[0] : (b.horaEntrega || '');
+          return hA.localeCompare(hB);
+        });
       
       days.push(
         <div
@@ -69,9 +86,9 @@ export default function CalendarView() {
                     }`}></div>
                     <span className="truncate">{order.folioOC}</span>
                   </div>
-                  {order.horaEntrega && (
+                  {(order.horaEntrega && order.horaEntrega.length > 0) && (
                     <div className="text-[10px] text-gray-700 bg-white/50 px-1 py-0.5 rounded truncate">
-                      🕒 {order.horaEntrega}
+                      🕒 {formatHorario(order.horaEntrega)}
                     </div>
                   )}
                   <div className="text-[10px] opacity-80 truncate">{order.proveedor} - {order.cantidadSolicitada} u.</div>
