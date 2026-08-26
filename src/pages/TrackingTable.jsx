@@ -188,7 +188,7 @@ export default function TrackingTable() {
                       {order.estatus}
                     </span>
                   </td>
-                  {isAuthenticated && (user === 'ADMIN' || order.createdBy === user || !order.createdBy) && (
+                  {isAuthenticated && (user === 'ADMIN' || order.createdBy === user) && (
                     <td className="p-3 text-right">
                       <div className="flex items-center justify-end gap-2">
                         <button onClick={() => setViewingOrder(order)} className="p-1.5 text-gray-500 hover:text-macro-blue hover:bg-blue-50 rounded transition-colors" title="Ver Detalle">
