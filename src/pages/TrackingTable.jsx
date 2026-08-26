@@ -10,14 +10,21 @@ export default function TrackingTable() {
   const { orders, deleteOrder } = useOrderStore();
   const [searchTerm, setSearchTerm] = useState('');
   const [filterEstatus, setFilterEstatus] = useState('');
+  const [filterProveedor, setFilterProveedor] = useState('');
   
   const [editingOrder, setEditingOrder] = useState(null);
   const [viewingOrder, setViewingOrder] = useState(null);
 
+  const PROVEEDORES = [
+    'SAMSUNG', 'MOTOROLA', 'XIAOMI', 'APPLE', 'OPPO', 'ZTE', 
+    'HONOR', 'VIVO', 'HUAWEI', 'REALME', 'HISENSE', 'TCL'
+  ];
+
   const filteredOrders = orders.filter(o => {
     const matchesSearch = o.folioOC.includes(searchTerm) || o.proveedor.toLowerCase().includes(searchTerm.toLowerCase()) || o.cedi.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesEstatus = filterEstatus ? o.estatus === filterEstatus : true;
-    return matchesSearch && matchesEstatus;
+    const matchesProveedor = filterProveedor ? o.proveedor === filterProveedor : true;
+    return matchesSearch && matchesEstatus && matchesProveedor;
   });
 
   const handleDelete = (id) => {
@@ -77,6 +84,15 @@ export default function TrackingTable() {
             />
           </div>
           
+          <select 
+            className="border border-gray-300 rounded-md py-2 px-3 text-sm focus:ring-macro-blue outline-none"
+            value={filterProveedor}
+            onChange={(e) => setFilterProveedor(e.target.value)}
+          >
+            <option value="">Todos los proveedores</option>
+            {PROVEEDORES.map(p => <option key={p} value={p}>{p}</option>)}
+          </select>
+
           <select 
             className="border border-gray-300 rounded-md py-2 px-3 text-sm focus:ring-macro-blue outline-none"
             value={filterEstatus}
