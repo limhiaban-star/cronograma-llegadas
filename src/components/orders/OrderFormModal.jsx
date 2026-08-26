@@ -19,8 +19,8 @@ const HORARIOS = [
   '18:00 pm - 19:00 pm'
 ];
 
-const generateCalendarLinks = (fecha, horario, folio, cedi) => {
-  if (!fecha || !horario) return { google: '', outlook: '' };
+const generateCalendarLinks = (fecha, horarioArray, folio, cedi) => {
+  if (!fecha || !horarioArray || horarioArray.length === 0) return { google: '', outlook: '' };
   
   const timeMap = {
     '08:00 am - 09:00 am': { s: '080000', e: '090000' },
@@ -32,7 +32,14 @@ const generateCalendarLinks = (fecha, horario, folio, cedi) => {
     '18:00 pm - 19:00 pm': { s: '180000', e: '190000' }
   };
   
-  const times = timeMap[horario] || { s: '080000', e: '090000' };
+  const arr = Array.isArray(horarioArray) ? horarioArray : [horarioArray];
+  // Ordenar los horarios segun HORARIOS original
+  arr.sort((a, b) => HORARIOS.indexOf(a) - HORARIOS.indexOf(b));
+  
+  const firstSlot = arr[0];
+  const lastSlot = arr[arr.length - 1];
+  
+  const times = { s: timeMap[firstSlot].s, e: timeMap[lastSlot].e };
   const dateStr = fecha.replace(/-/g, '');
   
   const startDate = `${dateStr}T${times.s}`;
@@ -58,6 +65,7 @@ export default function OrderFormModal({ onClose, orderToEdit = null }) {
     fechaOC: orderToEdit.fechaOC ? orderToEdit.fechaOC.substring(0,10) : '',
     fechaEntrega: orderToEdit.fechaEntrega ? orderToEdit.fechaEntrega.substring(0,10) : '',
     fechaIngreso: orderToEdit.fechaIngreso ? orderToEdit.fechaIngreso.substring(0,10) : '',
+    horaEntrega: orderToEdit.horaEntrega ? (Array.isArray(orderToEdit.horaEntrega) ? orderToEdit.horaEntrega : [orderToEdit.horaEntrega]) : [],
   } : {
     cedi: '',
     proveedor: '',
@@ -65,7 +73,7 @@ export default function OrderFormModal({ onClose, orderToEdit = null }) {
     folioSOLPED: '',
     fechaOC: '',
     fechaEntrega: '',
-    horaEntrega: '',
+    horaEntrega: [],
     cantidadSolicitada: '',
     estatus: 'EN TRÁNSITO',
     cantidadIngresada: '',
@@ -83,7 +91,7 @@ export default function OrderFormModal({ onClose, orderToEdit = null }) {
         folioSOLPED: orderToEdit.folioSOLPED,
         fechaOC: orderToEdit.fechaOC ? orderToEdit.fechaOC.substring(0,10) : '',
         fechaEntrega: orderToEdit.fechaEntrega ? orderToEdit.fechaEntrega.substring(0,10) : '',
-        horaEntrega: orderToEdit.horaEntrega || '',
+        horaEntrega: orderToEdit.horaEntrega ? (Array.isArray(orderToEdit.horaEntrega) ? orderToEdit.horaEntrega : [orderToEdit.horaEntrega]) : [],
         cantidadSolicitada: orderToEdit.cantidadSolicitada,
         estatus: orderToEdit.estatus,
         cantidadIngresada: orderToEdit.cantidadIngresada || '',
@@ -98,7 +106,19 @@ export default function OrderFormModal({ onClose, orderToEdit = null }) {
       formData.fechaEntrega && o.fechaEntrega && o.fechaEntrega.startsWith(formData.fechaEntrega) &&
       o.id !== orderToEdit?.id
     )
-    .map(o => o.horaEntrega);
+    .flatMap(o => Array.isArray(o.horaEntrega) ? o.horaEntrega : [o.horaEntrega])
+    .filter(Boolean);
+
+  const handleHorarioChange = (h) => {
+    setFormData(prev => {
+      const current = Array.isArray(prev.horaEntrega) ? prev.horaEntrega : (prev.horaEntrega ? [prev.horaEntrega] : []);
+      if (current.includes(h)) {
+        return { ...prev, horaEntrega: current.filter(x => x !== h) };
+      } else {
+        return { ...prev, horaEntrega: [...current, h] };
+      }
+    });
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -110,6 +130,10 @@ export default function OrderFormModal({ onClose, orderToEdit = null }) {
     setError('');
 
     // Validations
+    if (!formData.horaEntrega || formData.horaEntrega.length === 0) {
+      setError('Debes seleccionar al menos un horario de entrega.');
+      return;
+    }
     if (!orderToEdit && orders.some(o => o.folioOC === formData.folioOC)) {
       setError('El Folio de OC ya existe.');
       return;
@@ -169,7 +193,7 @@ export default function OrderFormModal({ onClose, orderToEdit = null }) {
         proveedor: formData.proveedor,
         cedi: formData.cedi,
         fecha_entrega: formData.fechaEntrega || 'No especificada',
-        hora_entrega: formData.horaEntrega || 'No especificada',
+        hora_entrega: Array.isArray(formData.horaEntrega) ? formData.horaEntrega.join(', ') : (formData.horaEntrega || 'No especificada'),
         cantidad: formData.cantidadSolicitada,
         google_cal: google,
         outlook_cal: outlook
@@ -247,15 +271,33 @@ export default function OrderFormModal({ onClose, orderToEdit = null }) {
                   <label className="block text-sm font-medium text-gray-700 mb-1">Fecha estimada de entrega *</label>
                   <input type="date" name="fechaEntrega" required value={formData.fechaEntrega} onChange={handleChange} className="w-full border border-gray-300 rounded-md p-2 outline-none focus:ring-2 focus:ring-macro-blue" />
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Horario de entrega *</label>
-                  <select name="horaEntrega" required value={formData.horaEntrega} onChange={handleChange} disabled={!formData.cedi || !formData.fechaEntrega} className="w-full border border-gray-300 rounded-md p-2 outline-none focus:ring-2 focus:ring-macro-blue disabled:bg-gray-100">
-                    <option value="">{(!formData.cedi || !formData.fechaEntrega) ? 'Selecciona CEDI y Fecha primero' : 'Selecciona un horario'}</option>
-                    {HORARIOS.filter(h => !occupiedSlots.includes(h) || (orderToEdit && orderToEdit.horaEntrega === h)).map(h => (
-                      <option key={h} value={h}>{h}</option>
-                    ))}
-                  </select>
-                </div>
+                  <div className="col-span-1 md:col-span-2 mt-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Horario(s) de entrega (Puedes seleccionar varios si la descarga toma horas) *</label>
+                    {(!formData.cedi || !formData.fechaEntrega) ? (
+                      <div className="text-sm text-gray-500 bg-gray-50 p-3 rounded-md border border-gray-200">Selecciona CEDI y Fecha primero para ver los horarios disponibles.</div>
+                    ) : (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                        {HORARIOS.map(h => {
+                          const isOccupied = occupiedSlots.includes(h) && !(Array.isArray(formData.horaEntrega) ? formData.horaEntrega.includes(h) : formData.horaEntrega === h);
+                          if (isOccupied) return null; // Hide occupied
+                          
+                          const isSelected = Array.isArray(formData.horaEntrega) ? formData.horaEntrega.includes(h) : formData.horaEntrega === h;
+                          
+                          return (
+                            <label key={h} className={`flex items-center gap-2 p-2 border rounded-md cursor-pointer transition-colors ${isSelected ? 'bg-blue-50 border-macro-blue' : 'bg-white hover:bg-gray-50 border-gray-200'}`}>
+                              <input 
+                                type="checkbox" 
+                                checked={isSelected}
+                                onChange={() => handleHorarioChange(h)}
+                                className="w-4 h-4 text-macro-blue border-gray-300 rounded focus:ring-macro-blue"
+                              />
+                              <span className="text-sm font-medium text-gray-700">{h}</span>
+                            </label>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Cantidad solicitada *</label>
                   <input type="number" name="cantidadSolicitada" required min="1" value={formData.cantidadSolicitada} onChange={handleChange} className="w-full border border-gray-300 rounded-md p-2 outline-none focus:ring-2 focus:ring-macro-blue" />
