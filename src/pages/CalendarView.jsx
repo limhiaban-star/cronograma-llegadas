@@ -33,7 +33,9 @@ export default function CalendarView() {
       const cloneDay = day;
       
       // Filtrar ordenes para este dia
-      const dayOrders = orders.filter(o => isSameDay(new Date(o.fechaEntrega), cloneDay));
+      const dayOrders = orders
+        .filter(o => isSameDay(new Date(o.fechaEntrega), cloneDay))
+        .sort((a, b) => (a.horaEntrega || '').localeCompare(b.horaEntrega || ''));
       
       days.push(
         <div
@@ -52,21 +54,28 @@ export default function CalendarView() {
               <div 
                 key={order.id}
                 onClick={() => setSelectedOrder(order)}
-                className={`text-xs p-1.5 rounded cursor-pointer truncate shadow-sm font-medium ${
+                className={`text-xs p-1.5 rounded cursor-pointer shadow-sm font-medium ${
                   order.estatus === 'EN TRÁNSITO' ? 'bg-yellow-100 text-yellow-800 border border-yellow-300' :
                   order.estatus === 'ENTREGADO' ? 'bg-green-100 text-green-800 border border-green-300' :
                   'bg-red-100 text-red-800 border border-red-300'
                 }`}
                 title={`${order.folioOC} - ${order.proveedor} (${order.cedi})`}
               >
-                <div className="flex items-center gap-1">
-                  <div className={`w-2 h-2 rounded-full ${
-                    order.estatus === 'EN TRÁNSITO' ? 'bg-yellow-500' :
-                    order.estatus === 'ENTREGADO' ? 'bg-green-500' : 'bg-red-500'
-                  }`}></div>
-                  {order.folioOC}
+                <div className="flex flex-col gap-0.5">
+                  <div className="flex items-center gap-1 font-bold">
+                    <div className={`w-2 h-2 rounded-full flex-shrink-0 ${
+                      order.estatus === 'EN TRÁNSITO' ? 'bg-yellow-500' :
+                      order.estatus === 'ENTREGADO' ? 'bg-green-500' : 'bg-red-500'
+                    }`}></div>
+                    <span className="truncate">{order.folioOC}</span>
+                  </div>
+                  {order.horaEntrega && (
+                    <div className="text-[10px] text-gray-700 bg-white/50 px-1 py-0.5 rounded truncate">
+                      🕒 {order.horaEntrega}
+                    </div>
+                  )}
+                  <div className="text-[10px] opacity-80 truncate">{order.proveedor} - {order.cantidadSolicitada} u.</div>
                 </div>
-                <div className="text-[10px] opacity-80">{order.proveedor} - {order.cantidadSolicitada} u.</div>
               </div>
             ))}
           </div>
