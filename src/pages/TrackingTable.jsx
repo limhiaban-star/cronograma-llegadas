@@ -134,10 +134,11 @@ export default function TrackingTable() {
           <thead>
             <tr className="bg-gray-50 border-b border-gray-200 text-gray-600 font-semibold uppercase text-xs">
               <th className="p-3">CEDI / Prov</th>
-              <th className="p-3">Folio OC / SOLPED</th>
+              <th className="p-3">Orden de compra / Solped</th>
               <th className="p-3">Fechas (OC / Entrega)</th>
               <th className="p-3 text-center">Cantidades (Sol / Ing / Pen)</th>
               <th className="p-3 text-center">Días de Ingreso</th>
+              <th className="p-3">Creado Por</th>
               <th className="p-3">Estatus</th>
               {isAuthenticated && <th className="p-3 text-right">Acciones</th>}
             </tr>
@@ -145,7 +146,7 @@ export default function TrackingTable() {
           <tbody>
             {filteredOrders.length === 0 ? (
               <tr>
-                <td colSpan={isAuthenticated ? "8" : "7"} className="p-6 text-center text-gray-500">No se encontraron registros.</td>
+                <td colSpan={isAuthenticated ? "9" : "8"} className="p-6 text-center text-gray-500">No se encontraron registros.</td>
               </tr>
             ) : (
               filteredOrders.map(order => (
@@ -156,7 +157,7 @@ export default function TrackingTable() {
                   </td>
                   <td className="p-3">
                     <div className="font-medium">{order.folioOC}</div>
-                    <div className="text-gray-500 text-xs">SOLPED: {order.folioSOLPED}</div>
+                    <div className="text-gray-500 text-xs">Solped: {order.folioSOLPED}</div>
                   </td>
                   <td className="p-3">
                     <div><span className="text-gray-500 mr-1">OC:</span>{format(new Date(order.fechaOC), 'dd/MM/yyyy')}</div>
@@ -173,10 +174,13 @@ export default function TrackingTable() {
                   </td>
                   <td className="p-3 text-center">
                     {order.diasIngreso !== undefined ? (
-                      <span className={`font-bold ${order.diasIngreso <= 1 ? 'text-green-600' : order.diasIngreso <= 3 ? 'text-yellow-600' : 'text-red-600'}`}>
+                      <span className={`px-2 py-1 rounded text-xs font-bold ${order.diasIngreso <= 1 ? 'bg-green-100 text-green-700' : order.diasIngreso <= 3 ? 'bg-yellow-100 text-yellow-700' : 'bg-red-100 text-red-700'}`}>
                         {order.diasIngreso} días
                       </span>
                     ) : '-'}
+                  </td>
+                  <td className="p-3">
+                    <span className="text-gray-600 text-xs font-medium uppercase bg-gray-100 px-2 py-1 rounded">{order.createdBy || 'ADMIN'}</span>
                   </td>
                   <td className="p-3">
                     <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold ${getSemaforoClass(order.estatus)}`}>
