@@ -9,7 +9,7 @@ import { useAuthStore } from '../store/useAuthStore';
 
 export default function TrackingTable() {
   const { orders, deleteOrder } = useOrderStore();
-  const { isAuthenticated } = useAuthStore();
+  const { isAuthenticated, user } = useAuthStore();
   const [searchTerm, setSearchTerm] = useState('');
   const [filterEstatus, setFilterEstatus] = useState('');
   const [filterProveedor, setFilterProveedor] = useState('');
@@ -20,8 +20,9 @@ export default function TrackingTable() {
 
   const PROVEEDORES = ['Bodesa', 'Veloci', 'Bajaj', 'Carabela', 'Kiwo', 'Yadea', 'Moto Colt'];
   const CEDIS = [
-    'CEDI MERIDA', 'CEDI VILLAHERMOSA', 'CEDI EDOMEX', 'CEDI GUADALAJARA',
-    'CEDI MERIDA MOTOS', 'CEDI SAN LUIS POTOSÍ', 'CEDI CULIACÁN', 'CEDI SALTILLO', 'CEDI TIJUANA'
+    'CEDI MERIDA', 'CEDI TUXTLA GUTIÉRREZ', 'CEDI VILLAHERMOSA', 'CEDI OAXACA',
+    'CEDI EDOMEX', 'CEDI GUADALAJARA', 'CEDI MERIDA MOTOS', 'CEDI SAN LUIS POTOSÍ',
+    'CEDI CULIACÁN', 'CEDI SALTILLO', 'CEDI TIJUANA'
   ];
 
   const filteredOrders = orders.filter(o => {
@@ -183,7 +184,7 @@ export default function TrackingTable() {
                       {order.estatus}
                     </span>
                   </td>
-                  {isAuthenticated && (
+                  {isAuthenticated && (user === 'ADMIN' || order.createdBy === user || !order.createdBy) && (
                     <td className="p-3 text-right">
                       <div className="flex items-center justify-end gap-2">
                         <button onClick={() => setViewingOrder(order)} className="p-1.5 text-gray-500 hover:text-macro-blue hover:bg-blue-50 rounded transition-colors" title="Ver Detalle">
