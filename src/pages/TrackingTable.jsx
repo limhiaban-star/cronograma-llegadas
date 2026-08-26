@@ -15,7 +15,9 @@ export default function TrackingTable() {
   const [filterProveedor, setFilterProveedor] = useState('');
   const [filterCedi, setFilterCedi] = useState('');
   const [filterMesOC, setFilterMesOC] = useState('');
+  const [filterMesEntrega, setFilterMesEntrega] = useState('');
   const [filterMesIngreso, setFilterMesIngreso] = useState('');
+  const [filterAño, setFilterAño] = useState('');
   
   const [editingOrder, setEditingOrder] = useState(null);
   const [viewingOrder, setViewingOrder] = useState(null);
@@ -34,6 +36,8 @@ export default function TrackingTable() {
     { value: '10', label: 'Octubre' }, { value: '11', label: 'Noviembre' }, { value: '12', label: 'Diciembre' }
   ];
 
+  const AÑOS = ['2023', '2024', '2025', '2026', '2027', '2028', '2029', '2030'];
+
   const filteredOrders = orders.filter(o => {
     const matchesSearch = o.folioOC.includes(searchTerm) || o.proveedor.toLowerCase().includes(searchTerm.toLowerCase()) || o.cedi.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesEstatus = filterEstatus ? o.estatus === filterEstatus : true;
@@ -43,10 +47,18 @@ export default function TrackingTable() {
     const mesOC = o.fechaOC ? o.fechaOC.substring(5, 7) : '';
     const matchesMesOC = filterMesOC ? mesOC === filterMesOC : true;
     
+    const mesEntrega = o.fechaEntrega ? o.fechaEntrega.substring(5, 7) : '';
+    const matchesMesEntrega = filterMesEntrega ? mesEntrega === filterMesEntrega : true;
+
     const mesIngreso = o.fechaIngreso ? o.fechaIngreso.substring(5, 7) : '';
     const matchesMesIngreso = filterMesIngreso ? mesIngreso === filterMesIngreso : true;
     
-    return matchesSearch && matchesEstatus && matchesProveedor && matchesCedi && matchesMesOC && matchesMesIngreso;
+    const añoOC = o.fechaOC ? o.fechaOC.substring(0, 4) : '';
+    const añoEntrega = o.fechaEntrega ? o.fechaEntrega.substring(0, 4) : '';
+    const añoIngreso = o.fechaIngreso ? o.fechaIngreso.substring(0, 4) : '';
+    const matchesAño = filterAño ? (añoOC === filterAño || añoEntrega === filterAño || añoIngreso === filterAño) : true;
+    
+    return matchesSearch && matchesEstatus && matchesProveedor && matchesCedi && matchesMesOC && matchesMesEntrega && matchesMesIngreso && matchesAño;
   });
 
   const handleDelete = (id) => {
@@ -107,22 +119,37 @@ export default function TrackingTable() {
           </div>
           <select 
             className="border border-gray-300 rounded-md py-2 px-3 text-sm focus:ring-macro-blue outline-none"
+            value={filterAño}
+            onChange={(e) => setFilterAño(e.target.value)}
+          >
+            <option value="">Año (Todos)</option>
+            {AÑOS.map(a => <option key={a} value={a}>{a}</option>)}
+          </select>
+          <select 
+            className="border border-gray-300 rounded-md py-2 px-3 text-sm focus:ring-macro-blue outline-none"
             value={filterMesOC}
             onChange={(e) => setFilterMesOC(e.target.value)}
           >
-            <option value="">Mes de OC (Todos)</option>
+            <option value="">Mes de OC</option>
+            {MESES.map(m => <option key={m.value} value={m.value}>{m.label}</option>)}
+          </select>
+          <select 
+            className="border border-gray-300 rounded-md py-2 px-3 text-sm focus:ring-macro-blue outline-none"
+            value={filterMesEntrega}
+            onChange={(e) => setFilterMesEntrega(e.target.value)}
+          >
+            <option value="">Mes de Entrega</option>
+            {MESES.map(m => <option key={m.value} value={m.value}>{m.label}</option>)}
+          </select>
+          <select 
+            className="border border-gray-300 rounded-md py-2 px-3 text-sm focus:ring-macro-blue outline-none"
+            value={filterMesIngreso}
+            onChange={(e) => setFilterMesIngreso(e.target.value)}
+          >
+            <option value="">Mes de Ingreso</option>
             {MESES.map(m => <option key={m.value} value={m.value}>{m.label}</option>)}
           </select>
             
-            <select 
-              className="border border-gray-300 rounded-md py-2 px-3 text-sm focus:ring-macro-blue outline-none"
-              value={filterMesIngreso}
-              onChange={(e) => setFilterMesIngreso(e.target.value)}
-            >
-              <option value="">Mes de Ingreso (Todos)</option>
-              {MESES.map(m => <option key={m.value} value={m.value}>{m.label}</option>)}
-            </select>
-
             <select 
               className="border border-gray-300 rounded-md py-2 px-3 text-sm focus:ring-macro-blue outline-none"
               value={filterCedi}
