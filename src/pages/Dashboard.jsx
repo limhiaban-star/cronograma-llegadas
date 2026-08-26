@@ -1,27 +1,36 @@
+import { useState } from 'react';
 import { useOrderStore } from '../store/useOrderStore';
 import { Package, Truck, XCircle, CheckCircle, Clock, AlertTriangle } from 'lucide-react';
 
+const PROVEEDORES = ['Bodesa', 'Veloci', 'Bajaj', 'Carabela', 'Kiwo', 'Yadea', 'Moto Colt'];
+
 export default function Dashboard() {
-  const { orders, getTransitOrders, getDeliveredOrders, getCancelledOrders } = useOrderStore();
+  const { orders } = useOrderStore();
+  const [filterProveedor, setFilterProveedor] = useState('');
   
-  const inTransit = getTransitOrders().length;
-  const delivered = getDeliveredOrders().length;
-  const cancelled = getCancelledOrders().length;
+  const filteredOrders = filterProveedor 
+    ? orders.filter(o => o.proveedor === filterProveedor) 
+    : orders;
+
+  const inTransit = filteredOrders.filter(o => o.estatus === 'EN TRÁNSITO').length;
+  const delivered = filteredOrders.filter(o => o.estatus === 'ENTREGADO').length;
+  const cancelled = filteredOrders.filter(o => o.estatus === 'CANCELADO').length;
   
-  const unidadesSolicitadas = orders.reduce((acc, curr) => acc + Number(curr.cantidadSolicitada || 0), 0);
-  const unidadesIngresadas = orders.reduce((acc, curr) => acc + Number(curr.cantidadIngresada || 0), 0);
-  const unidadesPendientes = orders.reduce((acc, curr) => acc + Number(curr.unidadesPendientes || 0), 0);
+  const unidadesSolicitadas = filteredOrders.reduce((acc, curr) => acc + Number(curr.cantidadSolicitada || 0), 0);
+  const unidadesIngresadas = filteredOrders.reduce((acc, curr) => acc + Number(curr.cantidadIngresada || 0), 0);
+  const unidadesPendientes = filteredOrders.reduce((acc, curr) => acc + Number(curr.unidadesPendientes || 0), 0);
   
   // Tiempo promedio de ingreso
-  const ordenesConIngreso = getDeliveredOrders().filter(o => o.diasIngreso !== undefined);
+  const ordenesConIngreso = filteredOrders.filter(o => o.estatus === 'ENTREGADO' && o.diasIngreso !== undefined);
   const promedioDias = ordenesConIngreso.length > 0 
     ? (ordenesConIngreso.reduce((acc, curr) => acc + curr.diasIngreso, 0) / ordenesConIngreso.length).toFixed(1)
     : 0;
 
   // Cumplimiento
-  const aTiempo = getDeliveredOrders().filter(o => o.diasIngreso <= 1).length;
-  const porcentajeCumplimiento = getDeliveredOrders().length > 0
-    ? Math.round((aTiempo / getDeliveredOrders().length) * 100)
+  const aTiempo = filteredOrders.filter(o => o.estatus === 'ENTREGADO' && o.diasIngreso <= 1).length;
+  const totalEntregadas = filteredOrders.filter(o => o.estatus === 'ENTREGADO').length;
+  const porcentajeCumplimiento = totalEntregadas > 0
+    ? Math.round((aTiempo / totalEntregadas) * 100)
     : 100;
 
   const kpis = [
@@ -37,8 +46,16 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <h1 className="text-2xl font-display font-black text-gray-800">Dashboard Ejecutivo</h1>
+        <select 
+          className="border border-gray-300 rounded-md py-2 px-3 text-sm focus:ring-macro-blue outline-none bg-white min-w-[200px]"
+          value={filterProveedor}
+          onChange={(e) => setFilterProveedor(e.target.value)}
+        >
+          <option value="">Todos los proveedores</option>
+          {PROVEEDORES.map(p => <option key={p} value={p}>{p}</option>)}
+        </select>
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
