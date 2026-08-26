@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useOrderStore } from '../../store/useOrderStore';
+import { useAuthStore } from '../../store/useAuthStore';
 import { X } from 'lucide-react';
 import emailjs from '@emailjs/browser';
 
 const CEDIS = [
-  'CEDI MERIDA', 'CEDI VILLAHERMOSA', 'CEDI EDOMEX', 'CEDI GUADALAJARA',
-  'CEDI MERIDA MOTOS', 'CEDI SAN LUIS POTOSÍ', 'CEDI CULIACÁN', 'CEDI SALTILLO', 'CEDI TIJUANA'
+  'CEDI MERIDA', 'CEDI TUXTLA GUTIÉRREZ', 'CEDI VILLAHERMOSA', 'CEDI OAXACA',
+  'CEDI EDOMEX', 'CEDI GUADALAJARA', 'CEDI MERIDA MOTOS', 'CEDI SAN LUIS POTOSÍ',
+  'CEDI CULIACÁN', 'CEDI SALTILLO', 'CEDI TIJUANA'
 ];
 const PROVEEDORES = ['Bodesa', 'Veloci', 'Bajaj', 'Carabela', 'Kiwo', 'Yadea', 'Moto Colt'];
 
@@ -62,6 +64,7 @@ const generateCalendarLinks = (fecha, horarioArray, folio, cedi) => {
 
 export default function OrderFormModal({ onClose, orderToEdit = null }) {
   const { addOrder, updateOrder, orders } = useOrderStore();
+  const { user } = useAuthStore();
   
   const [formData, setFormData] = useState(orderToEdit ? {
     ...orderToEdit,
@@ -168,7 +171,8 @@ export default function OrderFormModal({ onClose, orderToEdit = null }) {
       cantidadIngresada: formData.cantidadIngresada !== '' ? Number(formData.cantidadIngresada) : 0,
       fechaOC: formData.fechaOC ? `${formData.fechaOC}T12:00:00.000Z` : null,
       fechaEntrega: formData.fechaEntrega ? `${formData.fechaEntrega}T12:00:00.000Z` : null,
-      fechaIngreso: formData.fechaIngreso ? `${formData.fechaIngreso}T12:00:00.000Z` : null
+      fechaIngreso: formData.fechaIngreso ? `${formData.fechaIngreso}T12:00:00.000Z` : null,
+      createdBy: orderToEdit ? orderToEdit.createdBy : user
     };
 
     let shouldSendEmail = true;
