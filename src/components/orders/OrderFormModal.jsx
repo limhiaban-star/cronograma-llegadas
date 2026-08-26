@@ -7,10 +7,7 @@ const CEDIS = [
   'CEDI MERIDA', 'CEDI VILLAHERMOSA', 'CEDI EDOMEX', 'CEDI GUADALAJARA',
   'CEDI MERIDA MOTOS', 'CEDI SAN LUIS POTOSÍ', 'CEDI CULIACÁN', 'CEDI SALTILLO', 'CEDI TIJUANA'
 ];
-const PROVEEDORES = [
-  'SAMSUNG', 'MOTOROLA', 'XIAOMI', 'APPLE', 'OPPO', 'ZTE', 
-  'HONOR', 'VIVO', 'HUAWEI', 'REALME', 'HISENSE', 'TCL'
-];
+const PROVEEDORES = ['Bodesa', 'Veloci', 'Bajaj', 'Carabela', 'Kiwo', 'Yadea', 'Moto Colt'];
 
 const HORARIOS = [
   '08:00 am - 09:00 am',
