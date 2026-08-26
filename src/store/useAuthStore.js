@@ -16,7 +16,9 @@ export const useAuthStore = create(
       user: null,
       
       login: (username, password) => {
-        const found = VALID_USERS.find(u => u.username === username && u.password === password);
+        const cleanUser = username.trim().toUpperCase();
+        const cleanPass = password.trim();
+        const found = VALID_USERS.find(u => u.username.toUpperCase() === cleanUser && u.password === cleanPass);
         if (found) {
           set({ isAuthenticated: true, user: found.username });
           return true;
