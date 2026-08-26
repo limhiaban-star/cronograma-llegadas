@@ -1,4 +1,4 @@
-import { useState } from 'react';
+ï»¿import { useState } from 'react';
 import { X, Lock, User } from 'lucide-react';
 import { useAuthStore } from '../../store/useAuthStore';
 
@@ -56,7 +56,7 @@ export default function LoginModal({ onClose }) {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-macro-blue outline-none" 
-                placeholder="••••••••"
+                placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
               />
             </div>
           </div>
