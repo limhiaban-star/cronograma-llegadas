@@ -84,8 +84,9 @@ export default function OrderFormModal({ onClose, orderToEdit = null }) {
         proveedor: orderToEdit.proveedor,
         folioOC: orderToEdit.folioOC,
         folioSOLPED: orderToEdit.folioSOLPED,
-        fechaOC: orderToEdit.fechaOC.substring(0,10),
-        fechaEntrega: orderToEdit.fechaEntrega.substring(0,10),
+        fechaOC: orderToEdit.fechaOC ? orderToEdit.fechaOC.substring(0,10) : '',
+        fechaEntrega: orderToEdit.fechaEntrega ? orderToEdit.fechaEntrega.substring(0,10) : '',
+        horaEntrega: orderToEdit.horaEntrega || '',
         cantidadSolicitada: orderToEdit.cantidadSolicitada,
         estatus: orderToEdit.estatus,
         cantidadIngresada: orderToEdit.cantidadIngresada || '',
@@ -93,6 +94,14 @@ export default function OrderFormModal({ onClose, orderToEdit = null }) {
       });
     }
   }, [orderToEdit]);
+
+  const occupiedSlots = orders
+    .filter(o => 
+      o.cedi === formData.cedi && 
+      formData.fechaEntrega && o.fechaEntrega && o.fechaEntrega.startsWith(formData.fechaEntrega) &&
+      o.id !== orderToEdit?.id
+    )
+    .map(o => o.horaEntrega);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
