@@ -16,7 +16,7 @@ const MESES = [
   { value: '10', label: 'Octubre' }, { value: '11', label: 'Noviembre' }, { value: '12', label: 'Diciembre' }
 ];
 
-const AÑOS = ['2023', '2024', '2025', '2026', '2027', '2028', '2029', '2030'];
+const AÑOS = ['2026', '2027', '2028', '2029', '2030'];
 
 export default function Dashboard() {
   const { orders } = useOrderStore();
