@@ -3,9 +3,10 @@ import { persist } from 'zustand/middleware';
 
 // Aqui puedes agregar o modificar los usuarios y contrasenas
 const VALID_USERS = [
-  { username: 'comprador1', password: '123' },
-  { username: 'comprador2', password: '123' },
-  { username: 'limhi', password: '123' }
+  { username: 'ADMIN', password: 'Admin2026' },
+  { username: 'LEABAN', password: 'Leaban2026' },
+  { username: 'AAMARTINEZ', password: 'Aamartinez2026' },
+  { username: 'JISANCHEZ', password: 'Jisanchez2026' }
 ];
 
 export const useAuthStore = create(
