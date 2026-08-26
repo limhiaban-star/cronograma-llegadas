@@ -251,10 +251,9 @@ export default function OrderFormModal({ onClose, orderToEdit = null }) {
                   <label className="block text-sm font-medium text-gray-700 mb-1">Horario de entrega *</label>
                   <select name="horaEntrega" required value={formData.horaEntrega} onChange={handleChange} disabled={!formData.cedi || !formData.fechaEntrega} className="w-full border border-gray-300 rounded-md p-2 outline-none focus:ring-2 focus:ring-macro-blue disabled:bg-gray-100">
                     <option value="">{(!formData.cedi || !formData.fechaEntrega) ? 'Selecciona CEDI y Fecha primero' : 'Selecciona un horario'}</option>
-                    {HORARIOS.map(h => {
-                      const isOccupied = occupiedSlots.includes(h);
-                      return <option key={h} value={h} disabled={isOccupied}>{h} {isOccupied ? '(Reservado)' : ''}</option>
-                    })}
+                    {HORARIOS.filter(h => !occupiedSlots.includes(h) || (orderToEdit && orderToEdit.horaEntrega === h)).map(h => (
+                      <option key={h} value={h}>{h}</option>
+                    ))}
                   </select>
                 </div>
                 <div>
