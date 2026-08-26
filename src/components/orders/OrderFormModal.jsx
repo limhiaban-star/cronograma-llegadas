@@ -24,37 +24,38 @@ const generateCalendarLinks = (fecha, horarioArray, folio, cedi) => {
   if (!fecha || !horarioArray || horarioArray.length === 0) return { google: '', outlook: '' };
   
   const timeMap = {
-    '08:00 am - 09:00 am': { s: '080000', e: '090000' },
-    '09:00 am - 10:00 am': { s: '090000', e: '100000' },
-    '10:00 am - 11:00 am': { s: '100000', e: '110000' },
-    '11:00 am - 12:00 pm': { s: '110000', e: '120000' },
-    '12:00 pm - 13:00 pm': { s: '120000', e: '130000' },
-    '14:00 pm - 15:00 pm': { s: '140000', e: '150000' },
-    '16:00 pm - 17:00 pm': { s: '160000', e: '170000' },
-    '18:00 pm - 19:00 pm': { s: '180000', e: '190000' }
+    '08:00 am - 09:00 am': { s: '08:00:00', e: '09:00:00' },
+    '09:00 am - 10:00 am': { s: '09:00:00', e: '10:00:00' },
+    '10:00 am - 11:00 am': { s: '10:00:00', e: '11:00:00' },
+    '11:00 am - 12:00 pm': { s: '11:00:00', e: '12:00:00' },
+    '12:00 pm - 13:00 pm': { s: '12:00:00', e: '13:00:00' },
+    '14:00 pm - 15:00 pm': { s: '14:00:00', e: '15:00:00' },
+    '16:00 pm - 17:00 pm': { s: '16:00:00', e: '17:00:00' },
+    '18:00 pm - 19:00 pm': { s: '18:00:00', e: '19:00:00' }
   };
   
   const arr = Array.isArray(horarioArray) ? horarioArray : [horarioArray];
-  // Ordenar los horarios segun HORARIOS original
   arr.sort((a, b) => HORARIOS.indexOf(a) - HORARIOS.indexOf(b));
   
   const firstSlot = arr[0];
   const lastSlot = arr[arr.length - 1];
   
   const times = { s: timeMap[firstSlot].s, e: timeMap[lastSlot].e };
-  const dateStr = fecha.replace(/-/g, '');
   
-  const startDate = `${dateStr}T${times.s}`;
-  const endDate = `${dateStr}T${times.e}`;
+  // Para Google Calendar (YYYYMMDDTHHmmss)
+  const gStart = `${fecha.replace(/-/g, '')}T${times.s.replace(/:/g, '')}`;
+  const gEnd = `${fecha.replace(/-/g, '')}T${times.e.replace(/:/g, '')}`;
+  
+  // Para Outlook (YYYY-MM-DDTHH:mm:ss)
+  const oStart = `${fecha}T${times.s}`;
+  const oEnd = `${fecha}T${times.e}`;
   
   const title = encodeURIComponent(`Entrega OC: ${folio}`);
-  const details = encodeURIComponent(`Recepción de orden de compra ${folio} en ${cedi}`);
+  const details = encodeURIComponent(`Recepcion de orden de compra ${folio} en ${cedi}`);
   
-  const google = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${startDate}/${endDate}&details=${details}&location=${encodeURIComponent(cedi)}`;
+  const google = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${gStart}/${gEnd}&details=${details}&location=${encodeURIComponent(cedi)}`;
   
-  const startDt = `${fecha}T${times.s.substring(0,2)}:00:00`;
-  const endDt = `${fecha}T${times.e.substring(0,2)}:00:00`;
-  const outlook = `https://outlook.office.com/calendar/0/deeplink/compose?subject=${title}&body=${details}&location=${encodeURIComponent(cedi)}&startdt=${startDt}&enddt=${endDt}&allday=false`;
+  const outlook = `https://outlook.office.com/calendar/0/deeplink/compose?path=/calendar/action/compose&rru=addevent&startdt=${oStart}&enddt=${oEnd}&subject=${title}&body=${details}&location=${encodeURIComponent(cedi)}`;
   
   return { google, outlook };
 };
