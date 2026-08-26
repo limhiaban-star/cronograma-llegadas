@@ -14,6 +14,8 @@ export default function TrackingTable() {
   const [filterEstatus, setFilterEstatus] = useState('');
   const [filterProveedor, setFilterProveedor] = useState('');
   const [filterCedi, setFilterCedi] = useState('');
+  const [filterMesOC, setFilterMesOC] = useState('');
+  const [filterMesIngreso, setFilterMesIngreso] = useState('');
   
   const [editingOrder, setEditingOrder] = useState(null);
   const [viewingOrder, setViewingOrder] = useState(null);
@@ -24,13 +26,27 @@ export default function TrackingTable() {
     'CEDI EDOMEX', 'CEDI GUADALAJARA', 'CEDI MERIDA MOTOS', 'CEDI SAN LUIS POTOSÍ',
     'CEDI CULIACÁN', 'CEDI SALTILLO', 'CEDI TIJUANA'
   ];
+  
+  const MESES = [
+    { value: '01', label: 'Enero' }, { value: '02', label: 'Febrero' }, { value: '03', label: 'Marzo' },
+    { value: '04', label: 'Abril' }, { value: '05', label: 'Mayo' }, { value: '06', label: 'Junio' },
+    { value: '07', label: 'Julio' }, { value: '08', label: 'Agosto' }, { value: '09', label: 'Septiembre' },
+    { value: '10', label: 'Octubre' }, { value: '11', label: 'Noviembre' }, { value: '12', label: 'Diciembre' }
+  ];
 
   const filteredOrders = orders.filter(o => {
     const matchesSearch = o.folioOC.includes(searchTerm) || o.proveedor.toLowerCase().includes(searchTerm.toLowerCase()) || o.cedi.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesEstatus = filterEstatus ? o.estatus === filterEstatus : true;
     const matchesProveedor = filterProveedor ? o.proveedor === filterProveedor : true;
     const matchesCedi = filterCedi ? o.cedi === filterCedi : true;
-    return matchesSearch && matchesEstatus && matchesProveedor && matchesCedi;
+    
+    const mesOC = o.fechaOC ? o.fechaOC.substring(5, 7) : '';
+    const matchesMesOC = filterMesOC ? mesOC === filterMesOC : true;
+    
+    const mesIngreso = o.fechaIngreso ? o.fechaIngreso.substring(5, 7) : '';
+    const matchesMesIngreso = filterMesIngreso ? mesIngreso === filterMesIngreso : true;
+    
+    return matchesSearch && matchesEstatus && matchesProveedor && matchesCedi && matchesMesOC && matchesMesIngreso;
   });
 
   const handleDelete = (id) => {
@@ -89,12 +105,30 @@ export default function TrackingTable() {
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-          
-          <select 
-            className="border border-gray-300 rounded-md py-2 px-3 text-sm focus:ring-macro-blue outline-none"
-            value={filterCedi}
-            onChange={(e) => setFilterCedi(e.target.value)}
-          >
+          <div className="flex flex-wrap items-center gap-3">
+            <select 
+              className="border border-gray-300 rounded-md py-2 px-3 text-sm focus:ring-macro-blue outline-none"
+              value={filterMesOC}
+              onChange={(e) => setFilterMesOC(e.target.value)}
+            >
+              <option value="">Mes de OC (Todos)</option>
+              {MESES.map(m => <option key={m.value} value={m.value}>{m.label}</option>)}
+            </select>
+            
+            <select 
+              className="border border-gray-300 rounded-md py-2 px-3 text-sm focus:ring-macro-blue outline-none"
+              value={filterMesIngreso}
+              onChange={(e) => setFilterMesIngreso(e.target.value)}
+            >
+              <option value="">Mes de Ingreso (Todos)</option>
+              {MESES.map(m => <option key={m.value} value={m.value}>{m.label}</option>)}
+            </select>
+
+            <select 
+              className="border border-gray-300 rounded-md py-2 px-3 text-sm focus:ring-macro-blue outline-none"
+              value={filterCedi}
+              onChange={(e) => setFilterCedi(e.target.value)}
+            >
             <option value="">Todos los CEDIS</option>
             {CEDIS.map(c => <option key={c} value={c}>{c}</option>)}
           </select>
