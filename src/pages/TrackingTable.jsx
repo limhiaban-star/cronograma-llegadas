@@ -5,9 +5,11 @@ import { format } from 'date-fns';
 import * as XLSX from 'xlsx';
 import OrderFormModal from '../components/orders/OrderFormModal';
 import OrderDetailsModal from '../components/orders/OrderDetailsModal';
+import { useAuthStore } from '../store/useAuthStore';
 
 export default function TrackingTable() {
   const { orders, deleteOrder } = useOrderStore();
+  const { isAuthenticated } = useAuthStore();
   const [searchTerm, setSearchTerm] = useState('');
   const [filterEstatus, setFilterEstatus] = useState('');
   const [filterProveedor, setFilterProveedor] = useState('');
@@ -136,13 +138,13 @@ export default function TrackingTable() {
               <th className="p-3 text-center">Cantidades (Sol / Ing / Pen)</th>
               <th className="p-3 text-center">Días de Ingreso</th>
               <th className="p-3">Estatus</th>
-              <th className="p-3 text-right">Acciones</th>
+              {isAuthenticated && <th className="p-3 text-right">Acciones</th>}
             </tr>
           </thead>
           <tbody>
             {filteredOrders.length === 0 ? (
               <tr>
-                <td colSpan="7" className="p-6 text-center text-gray-500">No se encontraron registros.</td>
+                <td colSpan={isAuthenticated ? "8" : "7"} className="p-6 text-center text-gray-500">No se encontraron registros.</td>
               </tr>
             ) : (
               filteredOrders.map(order => (
@@ -181,19 +183,21 @@ export default function TrackingTable() {
                       {order.estatus}
                     </span>
                   </td>
-                  <td className="p-3 text-right">
-                    <div className="flex items-center justify-end gap-2">
-                      <button onClick={() => setViewingOrder(order)} className="p-1.5 text-gray-500 hover:text-macro-blue hover:bg-blue-50 rounded transition-colors" title="Ver Detalle">
-                        <Eye size={18} />
-                      </button>
-                      <button onClick={() => setEditingOrder(order)} className="p-1.5 text-gray-500 hover:text-macro-teal hover:bg-teal-50 rounded transition-colors" title="Editar">
-                        <Edit size={18} />
-                      </button>
-                      <button onClick={() => handleDelete(order.id)} className="p-1.5 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded transition-colors" title="Eliminar">
-                        <Trash2 size={18} />
-                      </button>
-                    </div>
-                  </td>
+                  {isAuthenticated && (
+                    <td className="p-3 text-right">
+                      <div className="flex items-center justify-end gap-2">
+                        <button onClick={() => setViewingOrder(order)} className="p-1.5 text-gray-500 hover:text-macro-blue hover:bg-blue-50 rounded transition-colors" title="Ver Detalle">
+                          <Eye size={18} />
+                        </button>
+                        <button onClick={() => setEditingOrder(order)} className="p-1.5 text-gray-500 hover:text-macro-teal hover:bg-teal-50 rounded transition-colors" title="Editar">
+                          <Edit size={18} />
+                        </button>
+                        <button onClick={() => handleDelete(order.id)} className="p-1.5 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded transition-colors" title="Eliminar">
+                          <Trash2 size={18} />
+                        </button>
+                      </div>
+                    </td>
+                  )}
                 </tr>
               ))
             )}
