@@ -7,18 +7,68 @@ const CEDIS = [
   'CEDI MERIDA', 'CEDI VILLAHERMOSA', 'CEDI EDOMEX', 'CEDI GUADALAJARA',
   'CEDI MERIDA MOTOS', 'CEDI SAN LUIS POTOSÍ', 'CEDI CULIACÁN', 'CEDI SALTILLO', 'CEDI TIJUANA'
 ];
-const PROVEEDORES = ['Bodesa', 'Veloci', 'Bajaj', 'Carabela', 'Kiwo', 'Yadea', 'Moto Colt'];
+const PROVEEDORES = [
+  'SAMSUNG', 'MOTOROLA', 'XIAOMI', 'APPLE', 'OPPO', 'ZTE', 
+  'HONOR', 'VIVO', 'HUAWEI', 'REALME', 'HISENSE', 'TCL'
+];
+
+const HORARIOS = [
+  '08:00 am - 09:00 am',
+  '09:00 am - 10:00 am',
+  '10:00 am - 11:00 am',
+  '12:00 pm - 13:00 pm',
+  '14:00 pm - 15:00 pm',
+  '16:00 pm - 17:00 pm',
+  '18:00 pm - 19:00 pm'
+];
+
+const generateCalendarLinks = (fecha, horario, folio, cedi) => {
+  if (!fecha || !horario) return { google: '', outlook: '' };
+  
+  const timeMap = {
+    '08:00 am - 09:00 am': { s: '080000', e: '090000' },
+    '09:00 am - 10:00 am': { s: '090000', e: '100000' },
+    '10:00 am - 11:00 am': { s: '100000', e: '110000' },
+    '12:00 pm - 13:00 pm': { s: '120000', e: '130000' },
+    '14:00 pm - 15:00 pm': { s: '140000', e: '150000' },
+    '16:00 pm - 17:00 pm': { s: '160000', e: '170000' },
+    '18:00 pm - 19:00 pm': { s: '180000', e: '190000' }
+  };
+  
+  const times = timeMap[horario] || { s: '080000', e: '090000' };
+  const dateStr = fecha.replace(/-/g, '');
+  
+  const startDate = `${dateStr}T${times.s}`;
+  const endDate = `${dateStr}T${times.e}`;
+  
+  const title = encodeURIComponent(`Entrega OC: ${folio}`);
+  const details = encodeURIComponent(`Recepción de orden de compra ${folio} en ${cedi}`);
+  
+  const google = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${startDate}/${endDate}&details=${details}&location=${encodeURIComponent(cedi)}`;
+  
+  const startDt = `${fecha}T${times.s.substring(0,2)}:00:00`;
+  const endDt = `${fecha}T${times.e.substring(0,2)}:00:00`;
+  const outlook = `https://outlook.office.com/calendar/0/deeplink/compose?subject=${title}&body=${details}&location=${encodeURIComponent(cedi)}&startdt=${startDt}&enddt=${endDt}&allday=false`;
+  
+  return { google, outlook };
+};
 
 export default function OrderFormModal({ onClose, orderToEdit = null }) {
   const { addOrder, updateOrder, orders } = useOrderStore();
   
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState(orderToEdit ? {
+    ...orderToEdit,
+    fechaOC: orderToEdit.fechaOC ? orderToEdit.fechaOC.substring(0,10) : '',
+    fechaEntrega: orderToEdit.fechaEntrega ? orderToEdit.fechaEntrega.substring(0,10) : '',
+    fechaIngreso: orderToEdit.fechaIngreso ? orderToEdit.fechaIngreso.substring(0,10) : '',
+  } : {
     cedi: '',
     proveedor: '',
     folioOC: '',
     folioSOLPED: '',
     fechaOC: '',
     fechaEntrega: '',
+    horaEntrega: '',
     cantidadSolicitada: '',
     estatus: 'EN TRÁNSITO',
     cantidadIngresada: '',
@@ -92,8 +142,9 @@ export default function OrderFormModal({ onClose, orderToEdit = null }) {
       updateOrder(orderToEdit.id, payload);
     } else {
       addOrder(payload);
+        // Enviar correo automático
+      const { google, outlook } = generateCalendarLinks(formData.fechaEntrega, formData.horaEntrega, formData.folioOC, formData.cedi);
       
-      // Enviar correo automático
       const cediEmails = {
         'CEDI MERIDA': 'israel.pat@macropay.mx, david.ocampo@macropay.mx, russell.pool@macropay.mx',
         'CEDI VILLAHERMOSA': 'rafael.torrez@macropay.mx, jesus.zavala@macropay.mx, omar.aguilar@macropay.mx',
@@ -112,7 +163,10 @@ export default function OrderFormModal({ onClose, orderToEdit = null }) {
         proveedor: formData.proveedor,
         cedi: formData.cedi,
         fecha_entrega: formData.fechaEntrega || 'No especificada',
-        cantidad: formData.cantidadSolicitada
+        hora_entrega: formData.horaEntrega || 'No especificada',
+        cantidad: formData.cantidadSolicitada,
+        google_cal: google,
+        outlook_cal: outlook
       };
 
       if (templateParams.to_email) {
@@ -186,6 +240,16 @@ export default function OrderFormModal({ onClose, orderToEdit = null }) {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Fecha estimada de entrega *</label>
                   <input type="date" name="fechaEntrega" required value={formData.fechaEntrega} onChange={handleChange} className="w-full border border-gray-300 rounded-md p-2 outline-none focus:ring-2 focus:ring-macro-blue" />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Horario de entrega *</label>
+                  <select name="horaEntrega" required value={formData.horaEntrega} onChange={handleChange} disabled={!formData.cedi || !formData.fechaEntrega} className="w-full border border-gray-300 rounded-md p-2 outline-none focus:ring-2 focus:ring-macro-blue disabled:bg-gray-100">
+                    <option value="">{(!formData.cedi || !formData.fechaEntrega) ? 'Selecciona CEDI y Fecha primero' : 'Selecciona un horario'}</option>
+                    {HORARIOS.map(h => {
+                      const isOccupied = occupiedSlots.includes(h);
+                      return <option key={h} value={h} disabled={isOccupied}>{h} {isOccupied ? '(Reservado)' : ''}</option>
+                    })}
+                  </select>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Cantidad solicitada *</label>
