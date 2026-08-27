@@ -297,7 +297,14 @@ export default function TrackingTable() {
       )}
       
       {viewingOrder && (
-        <OrderDetailsModal order={viewingOrder} onClose={() => setViewingOrder(null)} />
+        <OrderDetailsModal 
+          order={viewingOrder} 
+          onClose={() => setViewingOrder(null)} 
+          onEdit={(order) => {
+            setViewingOrder(null);
+            setEditingOrder(order);
+          }}
+        />
       )}
     </div>
   );
