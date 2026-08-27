@@ -19,10 +19,10 @@ export const useOrderStore = create((set, get) => ({
         });
         set({ orders: ordersData });
       }, (error) => {
-        alert("Error de lectura Firebase: " + error.message);
+        alert("Error de conexion con Firebase: " + error.message);
       });
     } catch (e) {
-      alert("Error init Firebase: " + e.message);
+      alert("Error iniciando Firebase: " + e.message);
     }
   },
 
@@ -42,8 +42,9 @@ export const useOrderStore = create((set, get) => ({
         }]
       };
       await setDoc(doc(db, 'orders', id), newOrder);
+      alert("✅ ¡Guardado en la nube con exito!");
     } catch (e) {
-      alert("Error guardando orden: " + e.message);
+      alert("❌ Error guardando orden en Firebase: " + e.message);
     }
   },
   
@@ -85,16 +86,18 @@ export const useOrderStore = create((set, get) => ({
 
       const { id: docId, ...dataToUpdate } = updatedOrder;
       await updateDoc(doc(db, 'orders', id), dataToUpdate);
+      alert("✅ ¡Actualizado en la nube con exito!");
     } catch (e) {
-      alert("Error actualizando orden: " + e.message);
+      alert("❌ Error actualizando en Firebase: " + e.message);
     }
   },
   
   deleteOrder: async (id) => {
     try {
       await deleteDoc(doc(db, 'orders', id));
+      alert("✅ ¡Eliminado de la nube con exito!");
     } catch (e) {
-      alert("Error eliminando orden: " + e.message);
+      alert("❌ Error eliminando en Firebase: " + e.message);
     }
   }
 }));
