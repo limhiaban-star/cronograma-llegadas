@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useOrderStore } from '../store/useOrderStore';
 import { Package, Truck, XCircle, CheckCircle, Clock, AlertTriangle } from 'lucide-react';
+import OrderDetailsModal from '../components/orders/OrderDetailsModal';
 
 const PROVEEDORES = ['Bodesa', 'Veloci', 'Bajaj', 'Carabela', 'Kiwo', 'Yadea', 'Moto Colt'];
 const CEDIS = [
@@ -20,6 +21,7 @@ const AÑOS = ['2026', '2027', '2028', '2029', '2030'];
 
 export default function Dashboard() {
   const { orders } = useOrderStore();
+  const [selectedOrder, setSelectedOrder] = useState(null);
   const [filterProveedor, setFilterProveedor] = useState('');
   const [filterCedi, setFilterCedi] = useState('');
   const [filterMesOC, setFilterMesOC] = useState('');
@@ -185,9 +187,9 @@ export default function Dashboard() {
                const diffTime = Math.abs(hoy - entrega);
                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
                return (
-                 <div key={order.id} className="p-4 bg-red-50 border-l-4 border-red-500 rounded text-red-800 flex justify-between">
+                 <div key={order.id} onClick={() => setSelectedOrder(order)} className="p-4 bg-red-50 border-l-4 border-red-500 rounded text-red-800 flex justify-between cursor-pointer hover:bg-red-100 transition-colors">
                     <div>
-                      <strong>🔴 OC {order.folioOC} – {order.proveedor} – {order.cedi}</strong><br/>
+                      <strong>🚨 OC {order.folioOC} – {order.proveedor} – {order.cedi}</strong><br/>
                       La entrega estaba programada para el {entrega.toLocaleDateString()} y continúa en tránsito.
                     </div>
                     <div className="font-bold">
@@ -198,8 +200,8 @@ export default function Dashboard() {
              }
              if (order.unidadesPendientes > 0 && order.estatus === 'ENTREGADO') {
                 return (
-                  <div key={order.id} className="p-4 bg-yellow-50 border-l-4 border-yellow-500 rounded text-yellow-800">
-                    <strong>🟡 OC {order.folioOC} – Ingreso parcial</strong><br/>
+                  <div key={order.id} onClick={() => setSelectedOrder(order)} className="p-4 bg-yellow-50 border-l-4 border-yellow-500 rounded text-yellow-800 cursor-pointer hover:bg-yellow-100 transition-colors">
+                    <strong>⚠️ OC {order.folioOC} – Ingreso parcial</strong><br/>
                     Se solicitaron {order.cantidadSolicitada}, pero solo ingresaron {order.cantidadIngresada}. Pendientes: {order.unidadesPendientes}.
                   </div>
                 )
@@ -209,6 +211,9 @@ export default function Dashboard() {
           {orders.length === 0 && <p className="text-gray-500 text-sm">No hay alertas activas.</p>}
         </div>
       </div>
+      {selectedOrder && (
+        <OrderDetailsModal order={selectedOrder} onClose={() => setSelectedOrder(null)} />
+      )}
     </div>
   );
 }
