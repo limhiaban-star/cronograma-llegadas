@@ -67,11 +67,18 @@ export default function OrderFormModal({ onClose, orderToEdit = null }) {
   const { user } = useAuthStore();
   
   const [formData, setFormData] = useState(orderToEdit ? {
-    ...orderToEdit,
+    cedi: orderToEdit.cedi,
+    proveedor: orderToEdit.proveedor,
+    folioOC: orderToEdit.folioOC,
+    folioSOLPED: orderToEdit.folioSOLPED,
     fechaOC: orderToEdit.fechaOC ? orderToEdit.fechaOC.substring(0,10) : '',
     fechaEntrega: orderToEdit.fechaEntrega ? orderToEdit.fechaEntrega.substring(0,10) : '',
-    fechaIngreso: orderToEdit.fechaIngreso ? orderToEdit.fechaIngreso.substring(0,10) : '',
     horaEntrega: orderToEdit.horaEntrega ? (Array.isArray(orderToEdit.horaEntrega) ? orderToEdit.horaEntrega : [orderToEdit.horaEntrega]) : [],
+    cantidadSolicitada: orderToEdit.cantidadSolicitada,
+    estatus: orderToEdit.estatus,
+    cantidadIngresada: orderToEdit.cantidadIngresada || '',
+    fechaIngreso: orderToEdit.fechaIngreso ? orderToEdit.fechaIngreso.substring(0,10) : '',
+    numCamiones: orderToEdit.numCamiones || ''
   } : {
     cedi: '',
     proveedor: '',
@@ -83,7 +90,8 @@ export default function OrderFormModal({ onClose, orderToEdit = null }) {
     cantidadSolicitada: '',
     estatus: 'EN TRÁNSITO',
     cantidadIngresada: '',
-    fechaIngreso: ''
+    fechaIngreso: '',
+    numCamiones: ''
   });
 
   const [error, setError] = useState('');
@@ -101,7 +109,8 @@ export default function OrderFormModal({ onClose, orderToEdit = null }) {
         cantidadSolicitada: orderToEdit.cantidadSolicitada,
         estatus: orderToEdit.estatus,
         cantidadIngresada: orderToEdit.cantidadIngresada || '',
-        fechaIngreso: orderToEdit.fechaIngreso ? orderToEdit.fechaIngreso.substring(0,10) : ''
+        fechaIngreso: orderToEdit.fechaIngreso ? orderToEdit.fechaIngreso.substring(0,10) : '',
+        numCamiones: orderToEdit.numCamiones || ''
       });
     }
   }, [orderToEdit]);
@@ -140,10 +149,17 @@ export default function OrderFormModal({ onClose, orderToEdit = null }) {
       setError('Debes seleccionar al menos un horario de entrega.');
       return;
     }
-    if (!orderToEdit && orders.some(o => o.folioOC === formData.folioOC)) {
-      setError('El Folio de OC ya existe.');
-      return;
+    
+    if (!orderToEdit) {
+      const newOcs = formData.folioOC.split(',').map(s => s.trim()).filter(Boolean);
+      const existingOcs = orders.flatMap(o => o.folioOC.split(',').map(s => s.trim()));
+      const duplicate = newOcs.find(oc => existingOcs.includes(oc));
+      if (duplicate) {
+        setError(`El Folio de OC ${duplicate} ya existe.`);
+        return;
+      }
     }
+    
     if (Number(formData.cantidadSolicitada) <= 0) {
       setError('La cantidad solicitada debe ser mayor a 0.');
       return;
@@ -167,6 +183,7 @@ export default function OrderFormModal({ onClose, orderToEdit = null }) {
 
     const payload = {
       ...formData,
+      numCamiones: formData.numCamiones !== '' ? Number(formData.numCamiones) : 1,
       cantidadSolicitada: Number(formData.cantidadSolicitada),
       cantidadIngresada: formData.cantidadIngresada !== '' ? Number(formData.cantidadIngresada) : 0,
       fechaOC: formData.fechaOC ? `${formData.fechaOC}T12:00:00.000Z` : null,
@@ -285,8 +302,8 @@ export default function OrderFormModal({ onClose, orderToEdit = null }) {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Orden de compra *</label>
-                  <input type="text" name="folioOC" required value={formData.folioOC} onChange={handleChange} className="w-full border border-gray-300 rounded-md p-2 outline-none focus:ring-2 focus:ring-macro-blue" />
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Órdenes de compra * <span className="text-xs text-gray-500 font-normal">(puedes ingresar varias separadas por coma)</span></label>
+                  <textarea name="folioOC" required value={formData.folioOC} onChange={handleChange} rows="2" className="w-full border border-gray-300 rounded-md p-2 outline-none focus:ring-2 focus:ring-macro-blue resize-none" placeholder="Ej. OC123, OC456" />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Solped *</label>
@@ -299,6 +316,10 @@ export default function OrderFormModal({ onClose, orderToEdit = null }) {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Fecha estimada de entrega *</label>
                   <input type="date" name="fechaEntrega" required value={formData.fechaEntrega} onChange={handleChange} className="w-full border border-gray-300 rounded-md p-2 outline-none focus:ring-2 focus:ring-macro-blue" />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Número de camiones *</label>
+                  <input type="number" name="numCamiones" required min="1" value={formData.numCamiones} onChange={handleChange} className="w-full border border-gray-300 rounded-md p-2 outline-none focus:ring-2 focus:ring-macro-blue" />
                 </div>
                   <div className="col-span-1 md:col-span-2 mt-2">
                     <label className="block text-sm font-medium text-gray-700 mb-2">Horario(s) de entrega (Puedes seleccionar varios si la descarga toma horas) *</label>
