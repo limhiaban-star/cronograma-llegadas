@@ -150,6 +150,16 @@ export default function OrderFormModal({ onClose, orderToEdit = null }) {
       return;
     }
     
+    if (!CEDIS.includes(formData.cedi)) {
+      setError('Selecciona un CEDI válido de la lista.');
+      return;
+    }
+
+    if (!PROVEEDORES.includes(formData.proveedor)) {
+      setError('Selecciona un Proveedor válido de la lista.');
+      return;
+    }
+    
     if (!orderToEdit) {
       const newOcs = formData.folioOC.split(',').map(s => s.trim()).filter(Boolean);
       const existingOcs = orders.flatMap(o => o.folioOC.split(',').map(s => s.trim()));
@@ -289,17 +299,33 @@ export default function OrderFormModal({ onClose, orderToEdit = null }) {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">CEDI de destino *</label>
-                  <select name="cedi" required value={formData.cedi} onChange={handleChange} className="w-full border border-gray-300 rounded-md p-2 outline-none focus:ring-2 focus:ring-macro-blue">
-                    <option value="">Seleccione un CEDI</option>
+                  <input 
+                    list="cedis-list"
+                    name="cedi" 
+                    required 
+                    value={formData.cedi} 
+                    onChange={handleChange} 
+                    className="w-full border border-gray-300 rounded-md p-2 outline-none focus:ring-2 focus:ring-macro-blue" 
+                    placeholder="Buscar CEDI..."
+                  />
+                  <datalist id="cedis-list">
                     {CEDIS.map(c => <option key={c} value={c}>{c}</option>)}
-                  </select>
+                  </datalist>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Proveedor *</label>
-                  <select name="proveedor" required value={formData.proveedor} onChange={handleChange} className="w-full border border-gray-300 rounded-md p-2 outline-none focus:ring-2 focus:ring-macro-blue">
-                    <option value="">Seleccione un proveedor</option>
+                  <input 
+                    list="proveedores-list"
+                    name="proveedor" 
+                    required 
+                    value={formData.proveedor} 
+                    onChange={handleChange} 
+                    className="w-full border border-gray-300 rounded-md p-2 outline-none focus:ring-2 focus:ring-macro-blue" 
+                    placeholder="Buscar proveedor..."
+                  />
+                  <datalist id="proveedores-list">
                     {PROVEEDORES.map(p => <option key={p} value={p}>{p}</option>)}
-                  </select>
+                  </datalist>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Órdenes de compra * <span className="text-xs text-gray-500 font-normal">(puedes ingresar varias separadas por coma)</span></label>
