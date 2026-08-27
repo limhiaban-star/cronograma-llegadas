@@ -27,18 +27,23 @@ export default function Dashboard() {
   const [filterMesIngreso, setFilterMesIngreso] = useState('');
   const [filterAño, setFilterAño] = useState('');
   
+  const getMesNum = (label) => {
+    const mes = MESES.find(m => m.label === label);
+    return mes ? mes.value : label;
+  };
+  
   const filteredOrders = orders.filter(o => {
     const matchesProveedor = filterProveedor ? o.proveedor === filterProveedor : true;
     const matchesCedi = filterCedi ? o.cedi === filterCedi : true;
     
     const mesOC = o.fechaOC ? o.fechaOC.substring(5, 7) : '';
-    const matchesMesOC = filterMesOC ? mesOC === filterMesOC : true;
+    const matchesMesOC = filterMesOC ? mesOC === getMesNum(filterMesOC) : true;
     
     const mesEntrega = o.fechaEntrega ? o.fechaEntrega.substring(5, 7) : '';
-    const matchesMesEntrega = filterMesEntrega ? mesEntrega === filterMesEntrega : true;
+    const matchesMesEntrega = filterMesEntrega ? mesEntrega === getMesNum(filterMesEntrega) : true;
     
     const mesIngreso = o.fechaIngreso ? o.fechaIngreso.substring(5, 7) : '';
-    const matchesMesIngreso = filterMesIngreso ? mesIngreso === filterMesIngreso : true;
+    const matchesMesIngreso = filterMesIngreso ? mesIngreso === getMesNum(filterMesIngreso) : true;
     
     const añoOC = o.fechaOC ? o.fechaOC.substring(0, 4) : '';
     const añoEntrega = o.fechaEntrega ? o.fechaEntrega.substring(0, 4) : '';
@@ -85,59 +90,65 @@ export default function Dashboard() {
       <div className="flex flex-col xl:flex-row items-start xl:items-center justify-between gap-4">
         <h1 className="text-2xl font-display font-black text-gray-800">Dashboard Ejecutivo</h1>
         <div className="flex flex-wrap items-center gap-3 w-full xl:w-auto justify-start xl:justify-end">
-          <select 
+          <input 
+            list="dash-anos-list"
+            placeholder="Año (Todos)"
             className="border border-gray-300 rounded-md py-2 px-3 text-sm focus:ring-macro-blue outline-none bg-white min-w-[120px] flex-1 xl:flex-none"
             value={filterAño}
             onChange={(e) => setFilterAño(e.target.value)}
-          >
-            <option value="">Año (Todos)</option>
+          />
+          <datalist id="dash-anos-list">
             {AÑOS.map(a => <option key={a} value={a}>{a}</option>)}
-          </select>
+          </datalist>
           
-          <select 
+          <input 
+            list="dash-meses-list"
+            placeholder="Mes de OC"
             className="border border-gray-300 rounded-md py-2 px-3 text-sm focus:ring-macro-blue outline-none bg-white min-w-[120px] flex-1 xl:flex-none"
             value={filterMesOC}
             onChange={(e) => setFilterMesOC(e.target.value)}
-          >
-            <option value="">Mes de OC</option>
-            {MESES.map(m => <option key={m.value} value={m.value}>{m.label}</option>)}
-          </select>
+          />
 
-          <select 
+          <input 
+            list="dash-meses-list"
+            placeholder="Mes Entrega"
             className="border border-gray-300 rounded-md py-2 px-3 text-sm focus:ring-macro-blue outline-none bg-white min-w-[120px] flex-1 xl:flex-none"
             value={filterMesEntrega}
             onChange={(e) => setFilterMesEntrega(e.target.value)}
-          >
-            <option value="">Mes Entrega</option>
-            {MESES.map(m => <option key={m.value} value={m.value}>{m.label}</option>)}
-          </select>
+          />
           
-          <select 
+          <input 
+            list="dash-meses-list"
+            placeholder="Mes Ingreso"
             className="border border-gray-300 rounded-md py-2 px-3 text-sm focus:ring-macro-blue outline-none bg-white min-w-[120px] flex-1 xl:flex-none"
             value={filterMesIngreso}
             onChange={(e) => setFilterMesIngreso(e.target.value)}
-          >
-            <option value="">Mes Ingreso</option>
-            {MESES.map(m => <option key={m.value} value={m.value}>{m.label}</option>)}
-          </select>
+          />
+          <datalist id="dash-meses-list">
+            {MESES.map(m => <option key={m.value} value={m.label}>{m.label}</option>)}
+          </datalist>
 
-          <select 
+          <input 
+            list="dash-cedis-list"
+            placeholder="Todos los CEDIS"
             className="border border-gray-300 rounded-md py-2 px-3 text-sm focus:ring-macro-blue outline-none bg-white min-w-[140px] flex-1 xl:flex-none"
             value={filterCedi}
             onChange={(e) => setFilterCedi(e.target.value)}
-          >
-            <option value="">Todos los CEDIS</option>
+          />
+          <datalist id="dash-cedis-list">
             {CEDIS.map(c => <option key={c} value={c}>{c}</option>)}
-          </select>
+          </datalist>
           
-          <select 
+          <input 
+            list="dash-proveedores-list"
+            placeholder="Todos los proveedores"
             className="border border-gray-300 rounded-md py-2 px-3 text-sm focus:ring-macro-blue outline-none bg-white min-w-[140px] flex-1 xl:flex-none"
             value={filterProveedor}
             onChange={(e) => setFilterProveedor(e.target.value)}
-          >
-            <option value="">Todos los proveedores</option>
+          />
+          <datalist id="dash-proveedores-list">
             {PROVEEDORES.map(p => <option key={p} value={p}>{p}</option>)}
-          </select>
+          </datalist>
         </div>
       </div>
       
