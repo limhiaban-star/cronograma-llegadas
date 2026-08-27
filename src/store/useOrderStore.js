@@ -3,6 +3,14 @@ import { differenceInDays, parseISO, startOfDay } from 'date-fns';
 import { collection, onSnapshot, doc, setDoc, updateDoc, deleteDoc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 
+const generateId = () => {
+  try {
+    return crypto.randomUUID();
+  } catch (e) {
+    return Date.now().toString(36) + Math.random().toString(36).substring(2);
+  }
+};
+
 export const useOrderStore = create((set, get) => ({
   orders: [],
   initialized: false,
@@ -19,22 +27,22 @@ export const useOrderStore = create((set, get) => ({
         });
         set({ orders: ordersData });
       }, (error) => {
-        alert("Error de lectura en Firebase: " + error.message);
+        console.error("Error de lectura en Firebase:", error);
       });
     } catch (e) {
-      alert("Error iniciando Firebase: " + e.message);
+      console.error("Error iniciando Firebase:", e);
     }
   },
 
-  addOrder: async (order) => {
+  addOrder: (order) => {
     try {
-      const id = crypto.randomUUID();
+      const id = generateId();
       const newOrder = {
         ...order,
         id,
         fechaCreacion: new Date().toISOString(),
         cantidadIngresada: 0,
-        unidadesPendientes: order.cantidadSolicitada,
+        unidadesPendientes: order.cantidadSolicitada || 0,
         historial: [{
           fechaHora: new Date().toISOString(),
           usuario: 'Usuario',
@@ -43,18 +51,20 @@ export const useOrderStore = create((set, get) => ({
         }]
       };
       
-      // Actualizacion optimista: mostramos la orden inmediatamente en pantalla
+      // Actualizacion optimista inmediata
       set((state) => ({ orders: [...state.orders, newOrder] }));
 
-      // Guardado en segundo plano
-      await setDoc(doc(db, 'orders', id), newOrder);
-      alert("Exito: Orden guardada y enviada a todos");
+      // Guardado en segundo plano sin await
+      setDoc(doc(db, 'orders', id), newOrder)
+        .then(() => console.log("Guardado en la nube con exito"))
+        .catch((e) => alert("Error guardando en la nube: " + e.message));
+        
     } catch (e) {
-      alert("Error critico guardando en Firebase: " + e.message);
+      alert("Error local crítico al crear orden: " + e.message);
     }
   },
   
-  updateOrder: async (id, updates, usuario = 'Usuario') => {
+  updateOrder: (id, updates, usuario = 'Usuario') => {
     try {
       const currentOrders = get().orders;
       const currentOrder = currentOrders.find(o => o.id === id);
@@ -96,22 +106,25 @@ export const useOrderStore = create((set, get) => ({
       set({ orders: newOrders });
 
       const { id: docId, ...dataToUpdate } = updatedOrder;
-      await updateDoc(doc(db, 'orders', id), dataToUpdate);
-      alert("Exito: Orden actualizada para todos");
+      
+      updateDoc(doc(db, 'orders', id), dataToUpdate)
+        .then(() => console.log("Actualizado en la nube con exito"))
+        .catch((e) => alert("Error actualizando en la nube: " + e.message));
+        
     } catch (e) {
-      alert("Error actualizando orden en Firebase: " + e.message);
+      alert("Error local al actualizar orden: " + e.message);
     }
   },
   
-  deleteOrder: async (id) => {
+  deleteOrder: (id) => {
     try {
       // Actualizacion optimista
       set((state) => ({
         orders: state.orders.filter(o => o.id !== id)
       }));
       
-      await deleteDoc(doc(db, 'orders', id));
-      alert("Exito: Orden eliminada para todos");
+      deleteDoc(doc(db, 'orders', id))
+        .catch((e) => alert("Error eliminando en la nube: " + e.message));
     } catch (e) {
       alert("Error eliminando orden: " + e.message);
     }
