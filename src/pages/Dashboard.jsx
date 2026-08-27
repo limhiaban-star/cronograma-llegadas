@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useOrderStore } from '../store/useOrderStore';
 import { Package, Truck, XCircle, CheckCircle, Clock, AlertTriangle } from 'lucide-react';
 import OrderDetailsModal from '../components/orders/OrderDetailsModal';
+import OrderFormModal from '../components/orders/OrderFormModal';
 
 const PROVEEDORES = ['Bodesa', 'Veloci', 'Bajaj', 'Carabela', 'Kiwo', 'Yadea', 'Moto Colt'];
 const CEDIS = [
@@ -22,6 +23,7 @@ const AÑOS = ['2026', '2027', '2028', '2029', '2030'];
 export default function Dashboard() {
   const { orders } = useOrderStore();
   const [selectedOrder, setSelectedOrder] = useState(null);
+  const [editingOrder, setEditingOrder] = useState(null);
   const [filterProveedor, setFilterProveedor] = useState('');
   const [filterCedi, setFilterCedi] = useState('');
   const [filterMesOC, setFilterMesOC] = useState('');
@@ -212,7 +214,20 @@ export default function Dashboard() {
         </div>
       </div>
       {selectedOrder && (
-        <OrderDetailsModal order={selectedOrder} onClose={() => setSelectedOrder(null)} />
+        <OrderDetailsModal 
+          order={selectedOrder} 
+          onClose={() => setSelectedOrder(null)} 
+          onEdit={(order) => {
+            setSelectedOrder(null);
+            setEditingOrder(order);
+          }}
+        />
+      )}
+      {editingOrder && (
+        <OrderFormModal 
+          orderToEdit={editingOrder} 
+          onClose={() => setEditingOrder(null)} 
+        />
       )}
     </div>
   );
