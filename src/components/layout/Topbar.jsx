@@ -1,4 +1,4 @@
-import { Bell, User, Plus, LogOut, LogIn } from 'lucide-react';
+﻿import { Bell, User, Plus, LogOut, LogIn, Cloud } from 'lucide-react';
 import { useState } from 'react';
 import { useOrderStore } from '../../store/useOrderStore';
 import { useAuthStore } from '../../store/useAuthStore';
@@ -9,14 +9,18 @@ export default function Topbar({ onNewOrder }) {
   const { isAuthenticated, user, logout } = useAuthStore();
   const [showLogin, setShowLogin] = useState(false);
   
-  // Alertas básicas: OCs retrasadas
-  const delayedCount = orders.filter(o => o.diasIngreso > 3 || (o.estatus === 'EN TRÁNSITO' && new Date(o.fechaEntrega) < new Date())).length;
+  // Alertas basicas: OCs retrasadas
+  const delayedCount = orders.filter(o => o.diasIngreso > 3 || (o.estatus === 'EN TRANSITO' && new Date(o.fechaEntrega) < new Date())).length;
 
   return (
     <>
       <header className="bg-white border-b border-gray-200 h-16 flex items-center justify-between px-6">
-        <div>
+        <div className="flex items-center gap-4">
           <h2 className="text-xl font-display text-gray-800">Panel de Control</h2>
+          <div className="flex items-center gap-1.5 px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold border border-green-200">
+            <Cloud size={14} />
+            <span>Nube Activa</span>
+          </div>
         </div>
         
         <div className="flex items-center gap-6">
@@ -49,7 +53,7 @@ export default function Topbar({ onNewOrder }) {
             </div>
             
             {isAuthenticated ? (
-              <button onClick={logout} className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-full transition-colors" title="Cerrar sesión">
+              <button onClick={logout} className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-full transition-colors" title="Cerrar sesion">
                 <LogOut size={18} />
               </button>
             ) : (
