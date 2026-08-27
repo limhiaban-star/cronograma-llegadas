@@ -7,10 +7,12 @@ import {
 import { es } from 'date-fns/locale';
 import { ChevronLeft, ChevronRight, Calendar as CalendarIcon } from 'lucide-react';
 import OrderDetailsModal from '../components/orders/OrderDetailsModal';
+import OrderFormModal from '../components/orders/OrderFormModal';
 
 export default function CalendarView() {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedOrder, setSelectedOrder] = useState(null);
+  const [editingOrder, setEditingOrder] = useState(null);
   const { orders } = useOrderStore();
 
   const nextMonth = () => setCurrentDate(addMonths(currentDate, 1));
@@ -149,7 +151,20 @@ export default function CalendarView() {
       </div>
 
       {selectedOrder && (
-        <OrderDetailsModal order={selectedOrder} onClose={() => setSelectedOrder(null)} />
+        <OrderDetailsModal 
+          order={selectedOrder} 
+          onClose={() => setSelectedOrder(null)} 
+          onEdit={(order) => {
+            setSelectedOrder(null);
+            setEditingOrder(order);
+          }}
+        />
+      )}
+      {editingOrder && (
+        <OrderFormModal 
+          orderToEdit={editingOrder} 
+          onClose={() => setEditingOrder(null)} 
+        />
       )}
     </div>
   );
