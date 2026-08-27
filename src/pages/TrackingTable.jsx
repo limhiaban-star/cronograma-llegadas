@@ -196,6 +196,7 @@ export default function TrackingTable() {
               <th className="p-3">CEDI / Prov</th>
               <th className="p-3">Orden de compra / Solped</th>
               <th className="p-3">Fechas (OC / Entrega)</th>
+              <th className="p-3 text-center">Camiones</th>
               <th className="p-3 text-center">Cantidades (Sol / Ing / Pen)</th>
               <th className="p-3 text-center">Días de Ingreso</th>
               <th className="p-3">Creado Por</th>
@@ -206,7 +207,7 @@ export default function TrackingTable() {
           <tbody>
             {filteredOrders.length === 0 ? (
               <tr>
-                <td colSpan={isAuthenticated ? "9" : "8"} className="p-6 text-center text-gray-500">No se encontraron registros.</td>
+                <td colSpan={isAuthenticated ? "10" : "9"} className="p-6 text-center text-gray-500">No se encontraron registros.</td>
               </tr>
             ) : (
               filteredOrders.map(order => (
@@ -222,11 +223,13 @@ export default function TrackingTable() {
                   <td className="p-3">
                     <div><span className="text-gray-500 mr-1 text-xs">OC:</span>{format(new Date(order.fechaOC), 'dd/MM/yyyy')}</div>
                     <div><span className="text-gray-500 mr-1 text-xs">Ent:</span>{format(new Date(order.fechaEntrega), 'dd/MM/yyyy')}</div>
-                    {order.numCamiones > 0 && (
-                      <div className="mt-1 inline-flex items-center gap-1 bg-gray-100 text-gray-600 text-[10px] font-bold px-1.5 py-0.5 rounded">
-                        🚚 {order.numCamiones} {order.numCamiones === 1 ? 'camión' : 'camiones'}
+                  </td>
+                  <td className="p-3 text-center">
+                    {order.numCamiones > 0 ? (
+                      <div className="inline-flex items-center gap-1 bg-gray-100 text-gray-700 text-xs font-bold px-2 py-1 rounded">
+                        🚚 {order.numCamiones}
                       </div>
-                    )}
+                    ) : '-'}
                   </td>
                   <td className="p-3 text-center">
                     <div className="flex items-center justify-center gap-3">
