@@ -270,18 +270,22 @@ export default function TrackingTable() {
                       {order.estatus}
                     </span>
                   </td>
-                  {isAuthenticated && (user === 'ADMIN' || order.createdBy === user) && (
+                  {isAuthenticated && (
                     <td className="p-3 text-right">
                       <div className="flex items-center justify-end gap-2">
                         <button onClick={() => setViewingOrder(order)} className="p-1.5 text-gray-500 hover:text-macro-blue hover:bg-blue-50 rounded transition-colors" title="Ver Detalle">
                           <Eye size={18} />
                         </button>
-                        <button onClick={() => setEditingOrder(order)} className="p-1.5 text-gray-500 hover:text-macro-teal hover:bg-teal-50 rounded transition-colors" title="Editar">
-                          <Edit size={18} />
-                        </button>
-                        <button onClick={() => handleDelete(order.id)} className="p-1.5 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded transition-colors" title="Eliminar">
-                          <Trash2 size={18} />
-                        </button>
+                        {(user === 'ADMIN' || order.createdBy === user) && (
+                          <>
+                            <button onClick={() => setEditingOrder(order)} className="p-1.5 text-gray-500 hover:text-macro-teal hover:bg-teal-50 rounded transition-colors" title="Editar">
+                              <Edit size={18} />
+                            </button>
+                            <button onClick={() => handleDelete(order.id)} className="p-1.5 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded transition-colors" title="Eliminar">
+                              <Trash2 size={18} />
+                            </button>
+                          </>
+                        )}
                       </div>
                     </td>
                   )}
