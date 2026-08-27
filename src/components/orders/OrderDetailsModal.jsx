@@ -21,10 +21,10 @@ export default function OrderDetailsModal({ order, onClose }) {
     <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4 backdrop-blur-sm">
       <div className="bg-white rounded-xl shadow-xl w-full max-w-2xl flex flex-col max-h-[90vh]">
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
-          <h2 className="text-xl font-display font-black text-gray-800">
-            Detalle de Orden: <span className="text-macro-blue">{order.folioOC}</span>
+          <h2 className="text-xl font-display font-black text-gray-800 max-w-[80%]">
+            Detalle de Orden: <span className="text-macro-blue break-words block sm:inline">{order.folioOC}</span>
           </h2>
-          <button onClick={onClose} className="p-2 text-gray-500 hover:bg-gray-100 rounded-full transition-colors">
+          <button onClick={onClose} className="p-2 text-gray-500 hover:bg-gray-100 rounded-full transition-colors flex-shrink-0">
             <X size={24} />
           </button>
         </div>
@@ -33,7 +33,8 @@ export default function OrderDetailsModal({ order, onClose }) {
           <div className="grid grid-cols-2 gap-y-4 gap-x-8 text-sm">
             <div><span className="text-gray-500 block mb-1">Proveedor</span><span className="font-bold">{order.proveedor}</span></div>
             <div><span className="text-gray-500 block mb-1">CEDI</span><span className="font-bold">{order.cedi}</span></div>
-            <div><span className="text-gray-500 block mb-1">Folio SOLPED</span><span className="font-bold">{order.folioSOLPED}</span></div>
+            <div className="col-span-2"><span className="text-gray-500 block mb-1">Folio SOLPED</span><span className="font-bold break-words">{order.folioSOLPED}</span></div>
+            <div><span className="text-gray-500 block mb-1">Camiones Programados</span><span className="font-bold">{order.numCamiones || 1} 🚚</span></div>
             <div><span className="text-gray-500 block mb-1">Estatus</span>
               <span className={`inline-block px-2 py-1 rounded text-xs font-bold ${
                 order.estatus === 'EN TRÁNSITO' ? 'bg-yellow-100 text-yellow-800' :
