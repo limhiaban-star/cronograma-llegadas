@@ -67,34 +67,46 @@ export default function CalendarView() {
             </span>
           </div>
           <div className="mt-2 space-y-1">
-            {dayOrders.map((order) => (
-              <div 
-                key={order.id}
-                onClick={() => setSelectedOrder(order)}
-                className={`text-xs p-1.5 rounded cursor-pointer shadow-sm font-medium ${
-                  order.estatus === 'EN TRÁNSITO' ? 'bg-yellow-100 text-yellow-800 border border-yellow-300' :
-                  order.estatus === 'ENTREGADO' ? 'bg-green-100 text-green-800 border border-green-300' :
-                  'bg-red-100 text-red-800 border border-red-300'
-                }`}
-                title={`${order.folioOC} - ${order.proveedor} (${order.cedi})`}
-              >
-                <div className="flex flex-col gap-0.5">
-                  <div className="flex items-center gap-1 font-bold">
-                    <div className={`w-2 h-2 rounded-full flex-shrink-0 ${
-                      order.estatus === 'EN TRÁNSITO' ? 'bg-yellow-500' :
-                      order.estatus === 'ENTREGADO' ? 'bg-green-500' : 'bg-red-500'
-                    }`}></div>
-                    <span className="truncate">{order.folioOC}</span>
-                  </div>
-                  {(order.horaEntrega && order.horaEntrega.length > 0) && (
-                    <div className="text-[10px] text-gray-700 bg-white/50 px-1 py-0.5 rounded truncate">
-                      🕒 {formatHorario(order.horaEntrega)}
+            {dayOrders.map((order) => {
+              
+              const getProviderClass = (prov) => {
+                switch (prov) {
+                  case 'Bodesa': return 'bg-blue-100 text-blue-800 border-blue-300';
+                  case 'Veloci': return 'bg-red-100 text-red-800 border-red-300';
+                  case 'Bajaj': return 'bg-orange-100 text-orange-800 border-orange-300';
+                  case 'Carabela': return 'bg-amber-100 text-amber-800 border-amber-300';
+                  case 'Kiwo': return 'bg-green-100 text-green-800 border-green-300';
+                  case 'Yadea': return 'bg-purple-100 text-purple-800 border-purple-300';
+                  case 'Moto Colt': return 'bg-slate-200 text-slate-800 border-slate-400';
+                  default: return 'bg-gray-100 text-gray-800 border-gray-300';
+                }
+              };
+              
+              return (
+                <div 
+                  key={order.id}
+                  onClick={() => setSelectedOrder(order)}
+                  className={`text-xs p-1.5 rounded cursor-pointer shadow-sm font-medium border ${getProviderClass(order.proveedor)}`}
+                  title={`${order.folioOC} - ${order.proveedor} (${order.cedi})`}
+                >
+                  <div className="flex flex-col gap-0.5">
+                    <div className="flex items-center gap-1 font-bold">
+                      <div className={`w-2 h-2 rounded-full flex-shrink-0 ${
+                        order.estatus === 'EN TRÁNSITO' ? 'bg-yellow-500' :
+                        order.estatus === 'ENTREGADO' ? 'bg-green-500' : 'bg-red-500'
+                      }`} title={order.estatus}></div>
+                      <span className="truncate">{order.folioOC}</span>
                     </div>
-                  )}
-                  <div className="text-[10px] opacity-80 truncate">{order.proveedor} - {order.cantidadSolicitada} u.</div>
+                    {(order.horaEntrega && order.horaEntrega.length > 0) && (
+                      <div className="text-[10px] text-gray-700 bg-white/50 px-1 py-0.5 rounded truncate">
+                        🕐 {formatHorario(order.horaEntrega)}
+                      </div>
+                    )}
+                    <div className="text-[10px] opacity-80 truncate">{order.proveedor} - {order.cantidadSolicitada} u.</div>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       );
