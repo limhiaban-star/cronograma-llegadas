@@ -215,13 +215,18 @@ export default function TrackingTable() {
                     <div className="font-bold text-gray-800">{order.cedi}</div>
                     <div className="text-gray-500 text-xs">{order.proveedor}</div>
                   </td>
-                  <td className="p-3">
-                    <div className="font-medium">{order.folioOC}</div>
-                    <div className="text-gray-500 text-xs">Solped: {order.folioSOLPED}</div>
+                  <td className="p-3 max-w-xs">
+                    <div className="font-medium break-words text-sm">{order.folioOC}</div>
+                    <div className="text-gray-500 text-xs mt-1">Solped: {order.folioSOLPED}</div>
                   </td>
                   <td className="p-3">
-                    <div><span className="text-gray-500 mr-1">OC:</span>{format(new Date(order.fechaOC), 'dd/MM/yyyy')}</div>
-                    <div><span className="text-gray-500 mr-1">Ent:</span>{format(new Date(order.fechaEntrega), 'dd/MM/yyyy')}</div>
+                    <div><span className="text-gray-500 mr-1 text-xs">OC:</span>{format(new Date(order.fechaOC), 'dd/MM/yyyy')}</div>
+                    <div><span className="text-gray-500 mr-1 text-xs">Ent:</span>{format(new Date(order.fechaEntrega), 'dd/MM/yyyy')}</div>
+                    {order.numCamiones > 0 && (
+                      <div className="mt-1 inline-flex items-center gap-1 bg-gray-100 text-gray-600 text-[10px] font-bold px-1.5 py-0.5 rounded">
+                        🚚 {order.numCamiones} {order.numCamiones === 1 ? 'camión' : 'camiones'}
+                      </div>
+                    )}
                   </td>
                   <td className="p-3 text-center">
                     <div className="flex items-center justify-center gap-3">
