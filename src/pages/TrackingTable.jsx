@@ -38,6 +38,11 @@ export default function TrackingTable() {
 
   const AÑOS = ['2026', '2027', '2028', '2029', '2030'];
 
+  const getMesNum = (label) => {
+    const mes = MESES.find(m => m.label === label);
+    return mes ? mes.value : label;
+  };
+
   const filteredOrders = orders.filter(o => {
     const matchesSearch = o.folioOC.includes(searchTerm) || o.proveedor.toLowerCase().includes(searchTerm.toLowerCase()) || o.cedi.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesEstatus = filterEstatus ? o.estatus === filterEstatus : true;
@@ -45,13 +50,13 @@ export default function TrackingTable() {
     const matchesCedi = filterCedi ? o.cedi === filterCedi : true;
     
     const mesOC = o.fechaOC ? o.fechaOC.substring(5, 7) : '';
-    const matchesMesOC = filterMesOC ? mesOC === filterMesOC : true;
+    const matchesMesOC = filterMesOC ? mesOC === getMesNum(filterMesOC) : true;
     
     const mesEntrega = o.fechaEntrega ? o.fechaEntrega.substring(5, 7) : '';
-    const matchesMesEntrega = filterMesEntrega ? mesEntrega === filterMesEntrega : true;
+    const matchesMesEntrega = filterMesEntrega ? mesEntrega === getMesNum(filterMesEntrega) : true;
 
     const mesIngreso = o.fechaIngreso ? o.fechaIngreso.substring(5, 7) : '';
-    const matchesMesIngreso = filterMesIngreso ? mesIngreso === filterMesIngreso : true;
+    const matchesMesIngreso = filterMesIngreso ? mesIngreso === getMesNum(filterMesIngreso) : true;
     
     const añoOC = o.fechaOC ? o.fechaOC.substring(0, 4) : '';
     const añoEntrega = o.fechaEntrega ? o.fechaEntrega.substring(0, 4) : '';
@@ -117,67 +122,76 @@ export default function TrackingTable() {
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-          <select 
-            className="border border-gray-300 rounded-md py-2 px-3 text-sm focus:ring-macro-blue outline-none"
-            value={filterAño}
-            onChange={(e) => setFilterAño(e.target.value)}
-          >
-            <option value="">Año (Todos)</option>
-            {AÑOS.map(a => <option key={a} value={a}>{a}</option>)}
-          </select>
-          <select 
-            className="border border-gray-300 rounded-md py-2 px-3 text-sm focus:ring-macro-blue outline-none"
-            value={filterMesOC}
-            onChange={(e) => setFilterMesOC(e.target.value)}
-          >
-            <option value="">Mes de OC</option>
-            {MESES.map(m => <option key={m.value} value={m.value}>{m.label}</option>)}
-          </select>
-          <select 
-            className="border border-gray-300 rounded-md py-2 px-3 text-sm focus:ring-macro-blue outline-none"
-            value={filterMesEntrega}
-            onChange={(e) => setFilterMesEntrega(e.target.value)}
-          >
-            <option value="">Mes de Entrega</option>
-            {MESES.map(m => <option key={m.value} value={m.value}>{m.label}</option>)}
-          </select>
-          <select 
-            className="border border-gray-300 rounded-md py-2 px-3 text-sm focus:ring-macro-blue outline-none"
-            value={filterMesIngreso}
-            onChange={(e) => setFilterMesIngreso(e.target.value)}
-          >
-            <option value="">Mes de Ingreso</option>
-            {MESES.map(m => <option key={m.value} value={m.value}>{m.label}</option>)}
-          </select>
+            <input 
+              list="anos-list"
+              placeholder="Año (Todos)"
+              className="border border-gray-300 rounded-md py-2 px-3 text-sm focus:ring-macro-blue outline-none w-32"
+              value={filterAño}
+              onChange={(e) => setFilterAño(e.target.value)}
+            />
+            <datalist id="anos-list">
+              {AÑOS.map(a => <option key={a} value={a}>{a}</option>)}
+            </datalist>
+
+            <input 
+              list="meses-list"
+              placeholder="Mes de OC"
+              className="border border-gray-300 rounded-md py-2 px-3 text-sm focus:ring-macro-blue outline-none w-36"
+              value={filterMesOC}
+              onChange={(e) => setFilterMesOC(e.target.value)}
+            />
+            <input 
+              list="meses-list"
+              placeholder="Mes de Entrega"
+              className="border border-gray-300 rounded-md py-2 px-3 text-sm focus:ring-macro-blue outline-none w-36"
+              value={filterMesEntrega}
+              onChange={(e) => setFilterMesEntrega(e.target.value)}
+            />
+            <input 
+              list="meses-list"
+              placeholder="Mes de Ingreso"
+              className="border border-gray-300 rounded-md py-2 px-3 text-sm focus:ring-macro-blue outline-none w-36"
+              value={filterMesIngreso}
+              onChange={(e) => setFilterMesIngreso(e.target.value)}
+            />
+            <datalist id="meses-list">
+              {MESES.map(m => <option key={m.value} value={m.label}>{m.label}</option>)}
+            </datalist>
             
-            <select 
-              className="border border-gray-300 rounded-md py-2 px-3 text-sm focus:ring-macro-blue outline-none"
+            <input 
+              list="cedis-table-list"
+              placeholder="Todos los CEDIS"
+              className="border border-gray-300 rounded-md py-2 px-3 text-sm focus:ring-macro-blue outline-none w-40"
               value={filterCedi}
               onChange={(e) => setFilterCedi(e.target.value)}
-            >
-            <option value="">Todos los CEDIS</option>
-            {CEDIS.map(c => <option key={c} value={c}>{c}</option>)}
-          </select>
-          
-          <select 
-            className="border border-gray-300 rounded-md py-2 px-3 text-sm focus:ring-macro-blue outline-none"
-            value={filterProveedor}
-            onChange={(e) => setFilterProveedor(e.target.value)}
-          >
-            <option value="">Todos los proveedores</option>
-            {PROVEEDORES.map(p => <option key={p} value={p}>{p}</option>)}
-          </select>
-
-          <select 
-            className="border border-gray-300 rounded-md py-2 px-3 text-sm focus:ring-macro-blue outline-none"
-            value={filterEstatus}
-            onChange={(e) => setFilterEstatus(e.target.value)}
-          >
-            <option value="">Todos los estatus</option>
-            <option value="EN TRÁNSITO">En Tránsito</option>
-            <option value="ENTREGADO">Entregado</option>
-            <option value="CANCELADO">Cancelado</option>
-          </select>
+            />
+            <datalist id="cedis-table-list">
+              {CEDIS.map(c => <option key={c} value={c}>{c}</option>)}
+            </datalist>
+            
+            <input 
+              list="proveedores-table-list"
+              placeholder="Todos los proveedores"
+              className="border border-gray-300 rounded-md py-2 px-3 text-sm focus:ring-macro-blue outline-none w-48"
+              value={filterProveedor}
+              onChange={(e) => setFilterProveedor(e.target.value)}
+            />
+            <datalist id="proveedores-table-list">
+              {PROVEEDORES.map(p => <option key={p} value={p}>{p}</option>)}
+            </datalist>
+  
+            <input 
+              list="estatus-list"
+              placeholder="Todos los estatus"
+              className="border border-gray-300 rounded-md py-2 px-3 text-sm focus:ring-macro-blue outline-none w-40"
+              value={filterEstatus}
+              onChange={(e) => setFilterEstatus(e.target.value)}
+            />
+            <datalist id="estatus-list">
+              <option value="EN TRÁNSITO">En Tránsito</option>
+              <option value="ENTREGADO">Entregado</option>
+              <option value="CANCELADO">Cancelado</option>
+            </datalist>
           
           <button 
             onClick={exportToExcel}
