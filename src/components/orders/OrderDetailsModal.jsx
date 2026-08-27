@@ -1,8 +1,12 @@
-import { X } from 'lucide-react';
+import { X, Edit } from 'lucide-react';
 import { format } from 'date-fns';
+import { useAuthStore } from '../../store/useAuthStore';
 
-export default function OrderDetailsModal({ order, onClose }) {
+export default function OrderDetailsModal({ order, onClose, onEdit }) {
+  const { user, isAuthenticated } = useAuthStore();
   if (!order) return null;
+
+  const canEdit = isAuthenticated && (user === 'ADMIN' || order.createdBy === user);
 
   const formatHorario = (horario) => {
     if (!horario || horario.length === 0) return 'No especificada';
@@ -24,9 +28,17 @@ export default function OrderDetailsModal({ order, onClose }) {
           <h2 className="text-xl font-display font-black text-gray-800 max-w-[80%]">
             Detalle de Orden: <span className="text-macro-blue break-words block sm:inline">{order.folioOC}</span>
           </h2>
-          <button onClick={onClose} className="p-2 text-gray-500 hover:bg-gray-100 rounded-full transition-colors flex-shrink-0">
-            <X size={24} />
-          </button>
+          <div className="flex items-center gap-2">
+            {canEdit && onEdit && (
+              <button onClick={() => onEdit(order)} className="flex items-center gap-1 px-3 py-1.5 bg-macro-teal text-white rounded-md hover:bg-teal-600 transition-colors text-sm font-medium">
+                <Edit size={16} />
+                Editar
+              </button>
+            )}
+            <button onClick={onClose} className="p-2 text-gray-500 hover:bg-gray-100 rounded-full transition-colors flex-shrink-0">
+              <X size={24} />
+            </button>
+          </div>
         </div>
         
         <div className="overflow-y-auto p-6 space-y-6">
