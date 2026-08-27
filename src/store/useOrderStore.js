@@ -14,12 +14,12 @@ export const useOrderStore = create((set, get) => ({
       const ordersRef = collection(db, 'orders');
       onSnapshot(ordersRef, (snapshot) => {
         const ordersData = [];
-        snapshot.forEach((doc) => {
-          ordersData.push({ ...doc.data(), id: doc.id });
+        snapshot.forEach((docSnap) => {
+          ordersData.push({ ...docSnap.data(), id: docSnap.id });
         });
         set({ orders: ordersData });
       }, (error) => {
-        alert("Error de conexion con Firebase: " + error.message);
+        alert("Error de lectura en Firebase: " + error.message);
       });
     } catch (e) {
       alert("Error iniciando Firebase: " + e.message);
@@ -31,6 +31,7 @@ export const useOrderStore = create((set, get) => ({
       const id = crypto.randomUUID();
       const newOrder = {
         ...order,
+        id,
         fechaCreacion: new Date().toISOString(),
         cantidadIngresada: 0,
         unidadesPendientes: order.cantidadSolicitada,
@@ -41,10 +42,15 @@ export const useOrderStore = create((set, get) => ({
           detalle: 'Orden creada'
         }]
       };
+      
+      // Actualizacion optimista: mostramos la orden inmediatamente en pantalla
+      set((state) => ({ orders: [...state.orders, newOrder] }));
+
+      // Guardado en segundo plano
       await setDoc(doc(db, 'orders', id), newOrder);
-      alert("✅ ¡Guardado en la nube con exito!");
+      alert("Exito: Orden guardada y enviada a todos");
     } catch (e) {
-      alert("❌ Error guardando orden en Firebase: " + e.message);
+      alert("Error critico guardando en Firebase: " + e.message);
     }
   },
   
@@ -71,7 +77,6 @@ export const useOrderStore = create((set, get) => ({
 
       updatedOrder.fechaModificacion = new Date().toISOString();
       
-      // History tracking
       const cambios = Object.keys(updates).map(k => k + ': ' + currentOrder[k] + ' -> ' + updates[k]).join(', ');
       
       updatedOrder.historial = [
@@ -84,20 +89,31 @@ export const useOrderStore = create((set, get) => ({
         ...(currentOrder.historial || [])
       ];
 
+      // Actualizacion optimista
+      const newOrders = [...currentOrders];
+      const index = newOrders.findIndex(o => o.id === id);
+      newOrders[index] = updatedOrder;
+      set({ orders: newOrders });
+
       const { id: docId, ...dataToUpdate } = updatedOrder;
       await updateDoc(doc(db, 'orders', id), dataToUpdate);
-      alert("✅ ¡Actualizado en la nube con exito!");
+      alert("Exito: Orden actualizada para todos");
     } catch (e) {
-      alert("❌ Error actualizando en Firebase: " + e.message);
+      alert("Error actualizando orden en Firebase: " + e.message);
     }
   },
   
   deleteOrder: async (id) => {
     try {
+      // Actualizacion optimista
+      set((state) => ({
+        orders: state.orders.filter(o => o.id !== id)
+      }));
+      
       await deleteDoc(doc(db, 'orders', id));
-      alert("✅ ¡Eliminado de la nube con exito!");
+      alert("Exito: Orden eliminada para todos");
     } catch (e) {
-      alert("❌ Error eliminando en Firebase: " + e.message);
+      alert("Error eliminando orden: " + e.message);
     }
   }
 }));
