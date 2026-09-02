@@ -45,6 +45,7 @@ export default function OrderDetailsModal({ order, onClose, onEdit }) {
           <div className="grid grid-cols-2 gap-y-4 gap-x-8 text-sm">
             <div><span className="text-gray-500 block mb-1">Proveedor</span><span className="font-bold">{order.proveedor}</span></div>
             <div><span className="text-gray-500 block mb-1">CEDI</span><span className="font-bold">{order.cedi}</span></div>
+            <div><span className="text-gray-500 block mb-1">Departamento</span><span className="font-bold">{order.departamento || 'N/A'}</span></div>
             <div className="col-span-2"><span className="text-gray-500 block mb-1">Folio SOLPED</span><span className="font-bold break-words">{order.folioSOLPED}</span></div>
             <div><span className="text-gray-500 block mb-1">Camiones Programados</span><span className="font-bold">{order.numCamiones || 1} 🚚</span></div>
             <div><span className="text-gray-500 block mb-1">Estatus</span>

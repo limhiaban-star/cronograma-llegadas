@@ -10,6 +10,7 @@ const CEDIS = [
   'CEDI CULIACÁN', 'CEDI SALTILLO', 'CEDI TIJUANA'
 ];
 const PROVEEDORES = ['Bodesa', 'Veloci', 'Bajaj', 'Carabela', 'Kiwo', 'Yadea', 'Moto Colt'];
+const DEPARTAMENTOS = ['Movilidad'];
 
 const HORARIOS = [
   '08:00 am - 09:00 am',
@@ -69,6 +70,7 @@ export default function OrderFormModal({ onClose, orderToEdit = null }) {
   const [formData, setFormData] = useState(orderToEdit ? {
     cedi: orderToEdit.cedi,
     proveedor: orderToEdit.proveedor,
+    departamento: orderToEdit.departamento || '',
     folioOC: orderToEdit.folioOC,
     folioSOLPED: orderToEdit.folioSOLPED,
     fechaOC: orderToEdit.fechaOC ? orderToEdit.fechaOC.substring(0,10) : '',
@@ -82,6 +84,7 @@ export default function OrderFormModal({ onClose, orderToEdit = null }) {
   } : {
     cedi: '',
     proveedor: '',
+    departamento: '',
     folioOC: '',
     folioSOLPED: '',
     fechaOC: '',
@@ -101,6 +104,7 @@ export default function OrderFormModal({ onClose, orderToEdit = null }) {
       setFormData({
         cedi: orderToEdit.cedi,
         proveedor: orderToEdit.proveedor,
+        departamento: orderToEdit.departamento || '',
         folioOC: orderToEdit.folioOC,
         folioSOLPED: orderToEdit.folioSOLPED,
         fechaOC: orderToEdit.fechaOC ? orderToEdit.fechaOC.substring(0,10) : '',
@@ -325,6 +329,21 @@ export default function OrderFormModal({ onClose, orderToEdit = null }) {
                   />
                   <datalist id="proveedores-list">
                     {PROVEEDORES.map(p => <option key={p} value={p}>{p}</option>)}
+                  </datalist>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Departamento *</label>
+                  <input 
+                    list="departamentos-list"
+                    name="departamento" 
+                    required 
+                    value={formData.departamento} 
+                    onChange={handleChange} 
+                    className="w-full border border-gray-300 rounded-md p-2 outline-none focus:ring-2 focus:ring-macro-blue" 
+                    placeholder="Buscar departamento..."
+                  />
+                  <datalist id="departamentos-list">
+                    {DEPARTAMENTOS.map(d => <option key={d} value={d}>{d}</option>)}
                   </datalist>
                 </div>
                 <div>

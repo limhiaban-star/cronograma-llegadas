@@ -75,6 +75,7 @@ export default function TrackingTable() {
   const exportToExcel = () => {
     const dataToExport = filteredOrders.map(o => ({
       'CEDI': o.cedi,
+      'Departamento': o.departamento || 'N/A',
       'Proveedor': o.proveedor,
       'Folio OC': o.folioOC,
       'Folio SOLPED': o.folioSOLPED,
@@ -207,7 +208,7 @@ export default function TrackingTable() {
         <table className="w-full text-left border-collapse text-sm">
           <thead>
             <tr className="bg-gray-50 border-b border-gray-200 text-gray-600 font-semibold uppercase text-xs">
-              <th className="p-3">CEDI / Prov</th>
+              <th className="p-3">CEDI / Prov / Depto</th>
               <th className="p-3">Orden de compra / Solped</th>
               <th className="p-3">Fechas (OC / Entrega)</th>
               <th className="p-3 text-center">Camiones</th>
@@ -229,6 +230,7 @@ export default function TrackingTable() {
                   <td className="p-3">
                     <div className="font-bold text-gray-800">{order.cedi}</div>
                     <div className="text-gray-500 text-xs">{order.proveedor}</div>
+                    {order.departamento && <div className="text-macro-blue font-medium text-xs mt-0.5">{order.departamento}</div>}
                   </td>
                   <td className="p-3 max-w-xs">
                     <div className="font-medium break-words text-sm">{order.folioOC}</div>
